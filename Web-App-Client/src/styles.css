@@ -1,0 +1,292 @@
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Component-Specific Elements */
+.container {
+  max-width: 100vw;
+  min-height: 100vh;
+}
+
+.sidenav {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+} .sidenav-header {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  width: 10vw; height: 100vh;
+  background-color: #0a58ca;
+  display: grid;
+} .sidenav-item {
+  height: 15vh;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  color: #ffffff;
+  text-align: center;
+} .sidenav-content {
+  padding-left: 2vh;
+  min-height: 100vh;
+  max-height: 100vh;
+}
+
+.login {
+  height: 100vh;
+  width: 100vw;
+  background-color: #0a58ca;
+  text-align: center;
+}
+
+.item-list {
+  display: grid;
+  grid-template-columns: repeat(4, 20vw);
+  max-width: 90vw;
+} .list-item {
+  cursor: pointer;
+  display: block;
+  width: 15vw; height: 20vh;
+  border: 1px solid #ffffff;
+  border-radius: 3vh;
+  box-shadow: 0 1vw 2vh 0 #c5c2c2;
+  padding: 2vh;
+  background-color: #ffffff;
+  font-size: 30fr;
+  text-align: center;
+} .list-item:hover { 
+  opacity: 0.5;
+} .list-img {
+  width: 10vw; height: 15vh;
+}
+
+.item-detail {
+  display: flex; 
+  padding: 6vh 5vw;
+  justify-content: space-evenly;
+} .item-detail-img {
+  height: 70vh;
+  border-style: groove;
+  margin-right: 2vw;
+}
+
+.survey-form {
+  margin: 5vh 5vw;
+  border-style: groove;
+  padding: 5vh 5vw;
+} .survey-radio {
+  display: grid;
+  height: 40vh; width: 65vw;
+  grid-template-columns: repeat(5, 13vw);
+} .survey-label {
+  display: block; position: relative;
+  margin: 1vh 1vw;
+  height: 12vh; width: 10vw;
+  font-size: 2vh;
+  text-align: center;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+} .survey-label input[type=radio] {                     /* hide input */
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+} .survey-mark {                                        /* radio style */
+  background-color: #ffffff;
+  position: absolute;
+  bottom: 0;
+  left: 25%; right: 25%;
+  height: 5vh; width: 4vw;
+  border-style: solid;
+  border-radius: 50%;
+  border-color: #c5c2c2;
+} .survey-label:hover input ~ .survey-mark {            /* change hover */
+  background: #c5c2c2;
+} .survey-label input:checked ~ .survey-mark {          /* change selected */
+  background-color: #0a58ca;
+} .survey-mark::after {                                 /* change indicator */
+  content: "";
+  position: absolute;
+  display: none;
+} .survey-label input:checked ~ .survey-mark:after {    /* show indicator */
+  display: block;
+} .survey-label .survey-mark:after {                    /* indicator style */
+  top: 35%; 
+	left: 35%;
+	height: 12px; width: 12px;
+	border-radius: 50%;
+	background: #ffffff;
+} .survey-text {
+  margin-bottom: 2vh;
+  height: 5vh; width: 50vh;
+  border: 1px solid #0a58ca;
+  border-radius: 2vh;
+  padding: 3vh 3vw 3vh 3vw;
+  font-size: 3vh;
+}
+
+.profile {
+  display: flex;
+  padding: 0vh 2vw;
+  max-height: 20vh;
+  text-align: center;
+} .profile-img {
+  min-width: 10vw; min-height: 10vh;
+  margin: auto 2vw auto 0;
+  font-size: 20vh;
+  color:#0a58ca;
+} .profile-detail {
+  min-width: 65vw;
+  display: block;
+  color:#0a58ca;
+  font-size: 3vh;
+  text-align: left;
+} 
+
+.mat-table {
+  overflow: scroll;
+  min-height: 60vh;
+  max-height: 60vh; 
+} .element-row  {
+  border-bottom-width: 0;
+}
+
+.admin-tab {
+  border-style: outset;
+  border-bottom: #ffffff;
+  padding: 0px 10px;
+  background-color: #ffffff;
+} .admin-tab-selected {
+  border-style: outset;
+  border-bottom: #ffffff;
+  padding: 10px 10px 0px 10px;
+  background-color: #c5c2c2;
+} .admin-add {
+  border-style: outset;
+  border-top: #ffffff;
+  padding: 5px;
+  background-color: #ffffff;
+} .admin-tab:hover, .admin-tab-selected:hover, .admin-add:hover {
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+.mat-column-userName {
+  flex: 0 0 20%;
+} .mat-column-userType {
+  flex: 0 0 10%;
+} .mat-column-lastName {
+  flex: 0 0 20%;
+} .mat-column-userRFID {
+  flex: 0 0 12%;
+} .mat-column-itemFree {
+  flex: 0 0 7%;
+} .mat-column-itemIcon {
+  flex: 0 0 5%;
+  padding-right: 10px;
+} .mat-column-itemName {
+  flex: 0 0 20%;
+} .mat-column-itemLock {
+  flex: 0 0 7%;
+} .mat-column-itemDesc {
+  flex: 0 0 45%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+} .mat-column-lockName {
+  flex: 0 0 7%;
+} .mat-column-lockOpen {
+  flex: 0 0 15%;
+} .mat-column-lockShut {
+  flex: 0 0 15%;
+} .mat-column-pickedUp {
+  flex: 0 0 6%;
+}
+
+.admin-form {
+  margin: 5vh 5vw;
+  border-style: groove;
+  padding: 5vh 5vw;
+} .admin-question {
+  padding: 10px 0px;
+  display: flex;
+} .admin-error-msg {
+  margin-left: 10px;
+  color: red;
+} .admin-radio {
+  border-style: inset;
+  display: grid;
+  grid-template-columns: auto auto auto;
+} .admin-radio-item {
+  cursor: pointer;
+  border-style: ridge;
+  padding: 0px 10px;
+  display: flex;
+  background-color: #c5c2c2;
+} .admin-radio-item > img {
+  width: 50px;
+  background-color: #c5c2c2;
+} .admin-radio-item > label {
+  display: block;
+  align-self: center;
+} .admin-textarea {
+  resize: vertical;
+} .admin-datetime-local {
+  margin: 0px 10px;
+}
+
+.bubble-button {
+  cursor: pointer;
+  display: inline-flex;
+  background-color: #ffffff;  
+  align-items: center;
+  border: 1px solid #1a1818;
+  border-radius: 3vh;
+  padding: 1vh 5vw;
+  margin-bottom: 2vh;
+  font-size: 3vh;
+  color: #0a58ca;
+} .bubble-button:hover {
+  opacity: 0.7;
+  font-weight: normal;
+} .bubble-button:disabled {
+  opacity: 0.2;
+  cursor: auto;
+} 
+
+.material-icons {
+  font-size: 10vh;
+}
+
+/* HTML Elements */
+* {
+  font-family: "darkmode-off", sans-serif;
+  font-weight: bold;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} h1, h3, h5 {
+  color: #0a58ca;
+} p {
+  color: #1a1818;
+} a, h2 {
+  cursor: pointer;
+  color: #0a58ca;
+  text-decoration: none; 
+  } a:hover { opacity: 0.5; 
+}
+
+.input-text {
+  margin-bottom: 2vh;
+  height: 5vh; width: 40vh;
+  border: 1px solid #ffffff;
+  border-radius: 2vh;
+  padding: 3vh 3vw 3vh 3vw;
+  font-size: 3vh;
+}
+.input-dt-local {
+  height: 5vh;
+  width: 45vh;
+  border: 1px solid #ffffff;
+  border-radius: 2vh;
+  margin-bottom: 2vh;
+  font-size: 3vh;
+}
