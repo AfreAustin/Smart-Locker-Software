@@ -9,9 +9,9 @@ import { Locker } from '../_interfaces/locker';
   template: `
   <form class="admin-form" autocomplete="off" [formGroup]="lockerForm" (ngSubmit)="submitForm()">
     <div class="admin-question">
-      <input type="text" formControlName="lockName" placeholder="Locker Name" required>
+      <input class="admin-text" type="text" formControlName="lockName" placeholder="Locker Name" required>
 
-      <div class="admin-error" *ngIf="lockName.invalid && (lockName.dirty || lockName.touched)">
+      <div *ngIf="lockName.invalid && (lockName.dirty || lockName.touched)">
         <div class="admin-error-msg" *ngIf="lockName.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="lockName.errors?.['minlength']"> must be at least 3 characters </div>
       </div>
@@ -19,23 +19,23 @@ import { Locker } from '../_interfaces/locker';
 
     <div class="admin-question">
       <label > Last Opened: &nbsp; </label>
-      <input type="datetime-local" formControlName="lastOpen" required>
+      <input class="admin-dt-local" type="datetime-local" formControlName="lastOpen" required>
 
-      <div class="admin-error" *ngIf="lastOpen.invalid && (lastOpen.dirty || lastOpen.touched)">
+      <div *ngIf="lastOpen.invalid && (lastOpen.dirty || lastOpen.touched)">
         <div class="admin-error-msg" *ngIf="lastOpen.errors?.['required']"> required </div>
       </div>
     </div>
 
     <div class="admin-question">
       <label > Last Closed: &nbsp; </label>
-      <input type="datetime-local" formControlName="lastShut" required>
+      <input class="admin-dt-local" type="datetime-local" formControlName="lastShut" required>
 
-      <div class="admin-error" *ngIf="lastShut.invalid && (lastShut.dirty || lastShut.touched)">
+      <div *ngIf="lastShut.invalid && (lastShut.dirty || lastShut.touched)">
         <div class="admin-error-msg" *ngIf="lastShut.errors?.['required']"> required </div>
       </div>
     </div>
 
-    <button type="submit" [disabled]="lockerForm.invalid">Add</button>
+    <button class="bubble-button" type="submit" [disabled]="lockerForm.invalid">Add</button>
   </form>
   ` 
 })

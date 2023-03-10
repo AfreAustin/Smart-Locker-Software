@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
-import { animate, state, style, transition, trigger } from '@angular/animations';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -18,13 +17,13 @@ import { Reservation } from 'src/app/_interfaces/reservation';
   template: `
   <h1> Admin: {{ custName }} </h1>
   <div>
-    | <button [ngClass]="{'admin-tab-selected' : dataSrc == 'acct', 'admin-tab' : dataSrc != 'acct'}" (click)="changeTableDataSrc('acct')"> Accounts </button>
-    | <button [ngClass]="{'admin-tab-selected' : dataSrc == 'item', 'admin-tab' : dataSrc != 'item'}" (click)="changeTableDataSrc('item')"> Items </button>
-    | <button [ngClass]="{'admin-tab-selected' : dataSrc == 'lock', 'admin-tab' : dataSrc != 'lock'}" (click)="changeTableDataSrc('lock')"> Lockers </button>
-    | <button [ngClass]="{'admin-tab-selected' : dataSrc == 'rsrv', 'admin-tab' : dataSrc != 'rsrv'}" (click)="changeTableDataSrc('rsrv')"> Reservations </button>
-    | <button [ngClass]="{'admin-tab-selected' : dataSrc == 'rcrd', 'admin-tab' : dataSrc != 'rcrd'}" (click)="changeTableDataSrc('rcrd')"> Records </button>
+    <button [ngClass]="{'admin-tab-selected' : dataSrc == 'acct', 'admin-tab' : dataSrc != 'acct'}" (click)="changeTableDataSrc('acct')"> Accounts </button>
+    <button [ngClass]="{'admin-tab-selected' : dataSrc == 'item', 'admin-tab' : dataSrc != 'item'}" (click)="changeTableDataSrc('item')"> Items </button>
+    <button [ngClass]="{'admin-tab-selected' : dataSrc == 'lock', 'admin-tab' : dataSrc != 'lock'}" (click)="changeTableDataSrc('lock')"> Lockers </button>
+    <button [ngClass]="{'admin-tab-selected' : dataSrc == 'rsrv', 'admin-tab' : dataSrc != 'rsrv'}" (click)="changeTableDataSrc('rsrv')"> Reservations </button>
+    <button [ngClass]="{'admin-tab-selected' : dataSrc == 'rcrd', 'admin-tab' : dataSrc != 'rcrd'}" (click)="changeTableDataSrc('rcrd')"> Records </button>
 
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort multiTemplateDataRows>
+    <mat-table class="mat-elevation-z8 admin-table" [dataSource]="dataSource" matSort multiTemplateDataRows>
       <ng-container matColumnDef="userName">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
         <mat-cell *matCellDef="let element"> <p> {{element.userName}} </p> </mat-cell>
@@ -52,7 +51,7 @@ import { Reservation } from 'src/app/_interfaces/reservation';
 
       <ng-container matColumnDef="itemIcon">
         <mat-header-cell *matHeaderCellDef> Icon </mat-header-cell>
-        <mat-cell *matCellDef="let element"> <img [src]="element.itemIcon"> </mat-cell>
+        <mat-cell *matCellDef="let element"> <img class="admin-table-icon" [src]="element.itemIcon"> </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="itemName">
@@ -124,9 +123,10 @@ import { Reservation } from 'src/app/_interfaces/reservation';
       </div>
     </mat-table>
 
+    <mat-paginator class="mat-elevation-z8" [pageSize]="10" [pageSizeOptions]="[5, 10, 50, 100]" [showFirstLastButtons]="true"></mat-paginator>
     <button class="admin-add" [routerLink]="['../new/', this.dataSrc]"> Add New </button>
     <button class="admin-add" (click)="sendMail()" *ngIf="this.dataSrc == 'rsrv'"> SEND RETURN REMINDERS </button>
-    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 50, 100]" [showFirstLastButtons]="true"></mat-paginator>
+
   </div>
   `,
 })
@@ -210,7 +210,6 @@ export class ManagerHomeComponent implements OnInit, OnDestroy {
     } else return "Missing Condition";
   }
 
-  // delete an element
   deleteElement(element: string , id: string) : void {
     switch (element) {
       case 'acct': this.databaseService.deleteAccount(id).subscribe({ next: () => this.accts$ = this.databaseService.getAccounts() });

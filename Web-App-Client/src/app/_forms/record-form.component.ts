@@ -30,9 +30,8 @@ import { DatabaseService } from 'src/app/_services/database.service';
       <div class="admin-radio">
         <div *ngFor="let item of items$ | async">
           <label class="admin-radio-item"> 
-            <img [src]="item.itemIcon">
             <input type="radio" formControlName="itemName" [value]="item.itemName"> 
-            <p>{{item.itemName}}</p>
+            <p>{{"(" + item.itemLock + ") " + item.itemName}}</p>
           </label>
         </div>
       </div>
@@ -50,27 +49,27 @@ import { DatabaseService } from 'src/app/_services/database.service';
   </div>
 
   <div class="admin-question">
-    <input type="text" formControlName="rsrvtion" placeholder="Reservation ID" required>
+    <input class="admin-text" type="text" formControlName="rsrvtion" placeholder="Reservation ID" required>
 
-    <div class="admin-error" *ngIf="rsrvtion.invalid && (rsrvtion.dirty || rsrvtion.touched)">
+    <div *ngIf="rsrvtion.invalid && (rsrvtion.dirty || rsrvtion.touched)">
       <div class="admin-error-msg" *ngIf="rsrvtion.errors?.['required']"> required </div>
     </div>
   </div>
 
   <div class="admin-question">
     <label>Start Time: </label>
-    <input class="admin-datetime-local" type="datetime-local" formControlName="strtTime" required>
+    <input class="admin-dt-local" type="datetime-local" formControlName="strtTime" required>
 
-    <div class="admin-error" *ngIf="strtTime.invalid && (strtTime.dirty || strtTime.touched)">
+    <div *ngIf="strtTime.invalid && (strtTime.dirty || strtTime.touched)">
       <div class="admin-error-msg" *ngIf="strtTime.errors?.['required']"> required </div>
     </div>
   </div>
 
   <div class="admin-question">
     <label>Stop Time:  </label>
-    <input class="admin-datetime-local" type="datetime-local" formControlName="stopTime" required>
+    <input class="admin-dt-local" type="datetime-local" formControlName="stopTime" required>
 
-    <div class="admin-error" *ngIf="stopTime.invalid && (stopTime.dirty || stopTime.touched)">
+    <div *ngIf="stopTime.invalid && (stopTime.dirty || stopTime.touched)">
       <div class="admin-error-msg" *ngIf="stopTime.errors?.['required']"> required </div>
     </div>
   </div>
@@ -84,59 +83,49 @@ import { DatabaseService } from 'src/app/_services/database.service';
     </label>
   </div>
 
-  <div>
+  <div class="admin-question">
       <label>Item Condition: </label>
     </div>
     <div class="survey-radio">
-      <label class="survey-label"> Completely Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="1">
-        <span class="survey-mark"></span>
+      <label> Completely Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="1"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Mostly Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="2">
-        <span class="survey-mark"></span>
+      <label> Mostly Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="2"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Moderately Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="3">
-        <span class="survey-mark"></span>
+      <label> Moderately Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="3"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Somewhat Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="4">
-        <span class="survey-mark"></span>
+      <label> Somewhat Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="4"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Slightly Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="5">
-        <span class="survey-mark"></span>
+      <label> Slightly Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="5"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Slightly Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="6">
-        <span class="survey-mark"></span>
+      <label> Slightly Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="6"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Somewhat Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="7">
-        <span class="survey-mark"></span>
+      <label> Somewhat Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="7"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Moderately Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="8">
-        <span class="survey-mark"></span>
+      <label> Moderately Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="8"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Mostly Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="9">
-        <span class="survey-mark"></span>
+      <label> Mostly Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="9"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Completely Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="10">
-        <span class="survey-mark"></span>
+      <label> Completely Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="10"> <span class="survey-mark"></span>
       </label>
     </div>
 
     <div>
       <label>Comments: <br>
-        <textarea rows="5" cols="65" formControlName="comments" placeholder="comments"></textarea>
+        <textarea class="survey-textarea" formControlName="comments" placeholder="comments"></textarea>
       </label>
     </div>    
 
-  <button type="submit" [disabled]="recordForm.invalid">Add</button>
+  <button class="bubble-button" type="submit" [disabled]="recordForm.invalid">Add</button>
   </form>
   ` 
 })

@@ -8,11 +8,10 @@ import { DatabaseService } from 'src/app/_services/database.service';
   selector: 'app-item-list',
   template: `
   <h1> Welcome to Smart Locker </h1>
-  <h1> Tools: </h1>
   <div class="item-list">
     <div *ngFor="let item of items$ | async">
       <a class="list-item" [routerLink]="['/customer/items', item._id]">
-        <img class="list-img" [src]="item.itemIcon" [title]="item.itemName">
+        <img [src]="item.itemIcon" [title]="item.itemName">
         <br>  {{item.itemName}}
       </a>
     </div>
@@ -21,7 +20,6 @@ import { DatabaseService } from 'src/app/_services/database.service';
 })
 export class ItemListComponent implements OnInit {
   items$: Observable<Item[]> = new Observable();
-  custName: string | undefined = "";
 
   constructor(private databaseService: DatabaseService) { }
   

@@ -26,7 +26,7 @@ import { DatabaseService } from '../_services/database.service';
   <h3>Reservations</h3>
 
   <div>
-    <mat-table class="mat-elevation-z8" [dataSource]="dataSource" matSort>
+    <mat-table class="mat-elevation-z8 profile-table" [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="itemName">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
         <mat-cell *matCellDef="let reservation"> <p> {{reservation.itemName}} </p> </mat-cell>
@@ -56,7 +56,7 @@ import { DatabaseService } from '../_services/database.service';
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 
-    <mat-paginator class="mat-elevation-z8" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator>
+    <mat-paginator class="mat-elevation-z8 profile-paginator" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" [showFirstLastButtons]="true"></mat-paginator>
   </div>
   `
 })
@@ -100,7 +100,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  
   
   // categorize reservations based on whether it is a Pick Up or Return
   categorizeReservations(username: string): void {

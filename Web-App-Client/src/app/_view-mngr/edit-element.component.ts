@@ -37,7 +37,7 @@ import { Reservation } from '../_interfaces/reservation';
     <app-reservation-form [initialState]="reservation" (formSubmitted)="editElement($event)"></app-reservation-form>
   </div>
 
-  <h2 routerLink="/manage/home"> Cancel </h2>
+  <h2 class="admin-nav" routerLink="/manage/home"> Cancel </h2>
   `
 })
 export class EditElementComponent implements OnInit, OnDestroy {

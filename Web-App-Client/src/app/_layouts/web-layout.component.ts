@@ -6,7 +6,6 @@ import { Component } from '@angular/core';
   <mat-sidenav-container class="sidenav">
     <mat-sidenav mode="side" opened class="sidenav-header">
       <img class="sidenav-item" src="assets/logo.png">
-      <br>
       <a class="sidenav-item" routerLink="/customer/profile">
         <i class="material-icons"> account_circle </i> <br>
         Profile
@@ -19,7 +18,6 @@ import { Component } from '@angular/core';
         <i class="material-icons"> keyboard </i> <br>
         Keyboard
       </a>
-      <br>
       <a class="sidenav-item" routerLink="/manage/home" *ngIf="userType == 'true'"> 
         <i class="material-icons"> perm_device_info </i> <br>
         Admin

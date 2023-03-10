@@ -17,16 +17,15 @@ import { DatabaseService } from 'src/app/_services/database.service';
         <div class="admin-radio">
           <div *ngFor="let item of items$ | async">
             <label class="admin-radio-item">
-              <p> ({{item.itemLock}}) </p>
-              <img [src]="item.itemIcon">
               <input type="radio" formControlName="itemName" [value]="item.itemName">
-              <p> {{item.itemName}} </p>
+              <p> {{"(" + item.itemLock + ") " + item.itemName}} </p>
             </label>
           </div>
         </div>
       </label>
     </div>
 
+    <!-- Delete and add default answer based on chosen locker -->
     <div class="admin-question">
       <label> In Locker: 
         <div class="admin-radio">
@@ -49,33 +48,33 @@ import { DatabaseService } from 'src/app/_services/database.service';
     </div>
 
     <div class="admin-question">
-      <label>Start Time: </label>
-      <input class="admin-datetime-local" type="datetime-local" formControlName="strtTime" required>
+      <label>Start Time: &nbsp; </label>
+      <input class="admin-dt-local" type="datetime-local" formControlName="strtTime" required>
 
-      <div class="admin-error" *ngIf="strtTime.invalid && (strtTime.dirty || strtTime.touched)">
+      <div *ngIf="strtTime.invalid && (strtTime.dirty || strtTime.touched)">
         <div class="admin-error-msg" *ngIf="strtTime.errors?.['required']"> required </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <label>Stop Time:  </label>
-      <input class="admin-datetime-local" type="datetime-local" formControlName="stopTime" required>
+      <label>Stop Time: &nbsp; </label>
+      <input class="admin-dt-local" type="datetime-local" formControlName="stopTime" required>
 
-      <div class="admin-error" *ngIf="stopTime.invalid && (stopTime.dirty || stopTime.touched)">
+      <div *ngIf="stopTime.invalid && (stopTime.dirty || stopTime.touched)">
         <div class="admin-error-msg" *ngIf="stopTime.errors?.['required']"> required </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <label> Picked Up?
+      <label> Event
         <div class="admin-radio">
-          <label class="admin-radio-item"> <input type="radio" formControlName="pickedUp" [value]="true"> Yes </label>
-          <label class="admin-radio-item"> <input type="radio" formControlName="pickedUp" [value]="false"> No </label>
+          <label class="admin-radio-item"> <input type="radio" formControlName="pickedUp" [value]="false"> Pick Up </label>
+          <label class="admin-radio-item"> <input type="radio" formControlName="pickedUp" [value]="true"> Return </label>
         </div>
       </label>
     </div>
 
-    <button type="submit" [disabled]="reservationForm.invalid">Add</button>
+    <button class="bubble-button" type="submit" [disabled]="reservationForm.invalid">Add</button>
   </form>
   `
 })

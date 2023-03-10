@@ -11,16 +11,16 @@ import { DatabaseService } from 'src/app/_services/database.service';
   template: `
   <form class="admin-form" autocomplete="off" [formGroup]="itemForm" (ngSubmit)="submitForm()">
     <div class="admin-question">
-      <input type="text" formControlName="itemName" placeholder="Item Name" required>
+      <input class="admin-text" type="text" formControlName="itemName" placeholder="Item Name" required>
     
-      <div class="admin-error" *ngIf="itemName.invalid && (itemName.dirty || itemName.touched)">
+      <div *ngIf="itemName.invalid && (itemName.dirty || itemName.touched)">
         <div class="admin-error-msg" *ngIf="itemName.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="itemName.errors?.['minlength']"> must be at least 3 characters </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <textarea class="admin-textarea" rows="5" cols="65" formControlName="itemDesc" placeholder="Item Description" required></textarea>
+      <textarea class="admin-textarea" formControlName="itemDesc" placeholder="Item Description" required></textarea>
 
       <div *ngIf="itemDesc.invalid && (itemDesc.dirty || itemDesc.touched)">
         <div class="admin-error-msg" *ngIf="itemDesc.errors?.['required']"> required </div>

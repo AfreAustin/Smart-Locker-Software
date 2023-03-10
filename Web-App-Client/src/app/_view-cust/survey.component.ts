@@ -14,57 +14,43 @@ import { DatabaseService } from 'src/app/_services/database.service';
   template: `
   <h1> WARNING: Complete Survey Before Continuing </h1>
   <form class="survey-form" [formGroup]="recordForm" (ngSubmit)="record()">
-    <div>
-      <label for="itemCond">Item Condition</label>
-    </div>
+    <p *ngIf="(reservation$ | async) as rsrv">Condition of {{rsrv.itemName}}: Reserved on {{parseTime(rsrv.strtTime)}} </p>
     <div class="survey-radio">
-      <label class="survey-label"> Completely Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="1">
-        <span class="survey-mark"></span>
+      <label> Completely Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="1"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Mostly Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="2">
-        <span class="survey-mark"></span>
+      <label> Mostly Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="2"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Moderately Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="3">
-        <span class="survey-mark"></span>
+      <label> Moderately Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="3"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Somewhat Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="4">
-        <span class="survey-mark"></span>
+      <label> Somewhat Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="4"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Slightly Broken <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="5">
-        <span class="survey-mark"></span>
+      <label> Slightly Broken <br>
+        <input type="radio" formControlName="itemCond" [value]="5"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Slightly Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="6">
-        <span class="survey-mark"></span>
+      <label> Slightly Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="6"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Somewhat Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="7">
-        <span class="survey-mark"></span>
+      <label> Somewhat Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="7"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Moderately Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="8">
-        <span class="survey-mark"></span>
+      <label> Moderately Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="8"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Mostly Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="9">
-        <span class="survey-mark"></span>
+      <label> Mostly Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="9"> <span class="survey-mark"></span>
       </label>
-      <label class="survey-label"> Completely Fine <br>
-        <input type="radio" formControlName="itemCond" name="itemCond" [value]="10">
-        <span class="survey-mark"></span>
+      <label> Completely Fine <br>
+        <input type="radio" formControlName="itemCond" [value]="10"> <span class="survey-mark"></span>
       </label>
     </div>
-    <div>
-      <label>Additional Comments <br>
-        <textarea rows="5" cols="65" formControlName="comments" placeholder="comments"></textarea>
-      </label>
-    </div>    
-    
+
+    <p> Additional Comments </p>
+    <textarea class="survey-textarea" formControlName="comments" placeholder="comments"></textarea>  
+    <br>
     <button class="bubble-button" type="submit" [disabled]="recordForm.invalid"> Record </button>
   </form>
   `
@@ -90,6 +76,7 @@ export class SurveyComponent implements OnInit, OnDestroy, ComponentCanDeactivat
     // get record specified
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.rsrvID = id?.toString();
+    this.reservation$ = this.databaseService.getReservation(this.rsrvID!);
     
     if (!id) alert('No id provided');
     else this.record$ = this.databaseService.getRecord(id);
@@ -114,7 +101,6 @@ export class SurveyComponent implements OnInit, OnDestroy, ComponentCanDeactivat
 
   record() {
     if (this.rsrvID != null) {
-      this.reservation$ = this.databaseService.getReservation(this.rsrvID);
       this.rsrvSub = this.reservation$.subscribe(rsrv => {
         let record: Record = {
           rsrvtion: rsrv._id,
@@ -137,7 +123,6 @@ export class SurveyComponent implements OnInit, OnDestroy, ComponentCanDeactivat
     }
   }
 
-  // create a new record
   addRecord(record: Record) {
     this.databaseService.createRecord(record)
       .subscribe({

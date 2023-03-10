@@ -10,40 +10,40 @@ import { DatabaseService } from 'src/app/_services/database.service';
 @Component({
   selector: 'app-item-details',
   template: `
-  <h2 routerLink="/customer/items"> &lt; Back </h2> 
+  <h2 routerLink="/customer/items" class="item-detail-nav"> &lt; Back </h2> 
   <div class="item-detail" *ngIf="(item$ | async) as item">
-    <img [src]="item.itemIcon" class="item-detail-img" >
+    <img [src]="item.itemIcon">
     <div>
       <h1>{{ item.itemName }}</h1>
       <p>
-        {{ (item.itemFree == true ) ? 'Available' : 'Not Available' }}
+        {{ (item.itemFree == true ) ? 'Available' : 'Not Available' }} for Pickup
         <br> Requirements: {{ item.itemReqs }}
         <br> Description: <br> &nbsp; {{ item.itemDesc }}
       </p>
       <br>
       <form [formGroup]="reserveForm" (ngSubmit)="reserve(item)">
         <div>
-          <label for="strtTime"> Start Time </label>
-          <input class="input-dt-local" type="datetime-local" formControlName="strtTime">
+          <label> Start Time </label>
+          <input class="item-detail-input" type="datetime-local" formControlName="strtTime">
         </div>
         <div>
-          <label for="stopTime"> End Time </label>
-          <input class="input-dt-local" type="datetime-local" formControlName="stopTime">
+          <label> End Time &nbsp;&nbsp; </label>
+          <input class="item-detail-input" type="datetime-local" formControlName="stopTime">
         </div>
         <button class="bubble-button" type="submit" [disabled]="reserveForm.invalid"> Reserve </button>
       </form>
-      <p style="color: red;"> {{message}} </p>
+      <p class="error-msg"> {{message}} </p>
     </div>
   </div>
   `
 })
 export class ItemDetailsComponent implements OnInit, OnDestroy {
+  private reservation$: Observable<Reservation[]> = new Observable();
   private checkSub: Subscription = new Subscription();
   private makeSub: Subscription = new Subscription();
-  private reservation$: Observable<Reservation[]> = new Observable();
   item$: Observable<Item> = new Observable();
   reserveForm: FormGroup = new FormGroup({});
-  message: String = '';
+  message: string = '';
 
   constructor(
     private router: Router,
@@ -109,7 +109,8 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
 
       if (strt >= stop) this.message = 'Start Time cannot be before End Time';
       else {
-        let available: Boolean = false;
+        let available: boolean = false;
+        let seen: boolean = false;
         let iter: number = 1;
 
         if (reservations.length == 0) available = true;
@@ -117,10 +118,13 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
           for (let reserve of reservations) {
             if (available == true) continue;
 
-            if ( (iter == reservations.length && available == false) ||
+            if ( (iter == reservations.length && available == false && seen == true) ||
               (reserve.itemName === item.itemName && reserve?.strtTime && strt < reserve.strtTime && stop <= reserve.strtTime) || 
               (reserve.itemName === item.itemName && reserve?.stopTime && strt >= reserve.stopTime && stop > reserve.stopTime)
-            ) { available = true; }
+            ) { 
+              available = true;
+              seen = true;
+            } else if (reserve.itemName === item.itemName ) seen = true;
             
             iter = iter + 1;
           }

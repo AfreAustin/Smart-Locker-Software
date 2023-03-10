@@ -9,18 +9,18 @@ import { Account } from '../_interfaces/account';
   template: `
   <form class="admin-form" autocomplete="off" [formGroup]="accountForm" (ngSubmit)="submitForm()">
     <div class="admin-question">
-      <input type="email" formControlName="userName" placeholder="Email" required>
+      <input class="admin-text" type="email" formControlName="userName" placeholder="Email" required>
       
-      <div class="admin-error" *ngIf="userName.invalid && (userName.dirty || userName.touched)">
+      <div *ngIf="userName.invalid && (userName.dirty || userName.touched)">
         <div class="admin-error-msg" *ngIf="userName.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="userName.errors?.['minlength']"> must be at least 3 characters </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <input type="password" formControlName="password" placeholder="Password" required>
+      <input class="admin-text" type="password" formControlName="password" placeholder="Password" required>
 
-      <div class="admin-error" *ngIf="password.invalid && (password.dirty || password.touched)">
+      <div *ngIf="password.invalid && (password.dirty || password.touched)">
         <div class="admin-error-msg" *ngIf="password.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="password.errors?.['minlength']"> must be at least 5 characters </div>
       </div>
@@ -36,27 +36,27 @@ import { Account } from '../_interfaces/account';
     </div>
 
     <div class="admin-question">
-      <input type="text" formControlName="foreName" placeholder="First Name" required>
+      <input class="admin-text" type="text" formControlName="foreName" placeholder="First Name" required>
 
-      <div class="admin-error" *ngIf="foreName.invalid && (foreName.dirty || foreName.touched)">
+      <div *ngIf="foreName.invalid && (foreName.dirty || foreName.touched)">
         <div class="admin-error-msg" *ngIf="foreName.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="foreName.errors?.['minlength']"> must be at least 1 character </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <input type="text" formControlName="lastName" placeholder="Last Name" required>
+      <input class="admin-text" type="text" formControlName="lastName" placeholder="Last Name" required>
 
-      <div class="admin-error" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
+      <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
         <div class="admin-error-msg" *ngIf="lastName.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="lastName.errors?.['minlength']"> must be at least 1 character </div>
       </div>
     </div>
 
     <div class="admin-question">
-      <input type="text" maxlength="10" formControlName="userRFID" placeholder="RFID Number" required>
+      <input class="admin-text" type="text" maxlength="10" formControlName="userRFID" placeholder="RFID Number" required>
 
-      <div class="admin-error" *ngIf="userRFID.invalid && (userRFID.dirty || userRFID.touched)">
+      <div *ngIf="userRFID.invalid && (userRFID.dirty || userRFID.touched)">
         <div class="admin-error-msg" *ngIf="userRFID.errors?.['required']"> required </div>
         <div class="admin-error-msg" *ngIf="userRFID.errors?.['minlength']"> must be 10 numbers </div>
       </div>

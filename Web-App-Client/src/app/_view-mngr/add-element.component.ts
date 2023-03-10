@@ -32,7 +32,7 @@ import { DatabaseService } from 'src/app/_services/database.service';
     <app-reservation-form (formSubmitted)="addElement($event)"></app-reservation-form>
   </div>
 
-  <h2 routerLink="/manage/home"> Cancel </h2>
+  <h2 class="admin-nav" routerLink="/manage/home"> Cancel </h2>
   `
 })
 export class AddElementComponent implements OnInit, OnDestroy{
