@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
-import { Locker } from '../_interfaces/locker';
+import { Locker } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-locker-form',

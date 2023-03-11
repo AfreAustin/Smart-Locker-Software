@@ -11,7 +11,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { AppComponent } from './app.component';
-import { WebLayoutComponent } from './_layouts/web-layout.component';
+import { WebLayoutComponent } from './_resources/layout-web.component';
 import { AuthMngrGuard } from './_services/auth-mngr.guard';
 import { PreventLeaveGuard } from './_services/prevent-leave.guard';
 

@@ -2,11 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { Record } from 'src/app/_interfaces/record';
-import { Item } from 'src/app/_interfaces/item';
-import { Account } from 'src/app/_interfaces/account';
-import { Locker } from 'src/app/_interfaces/locker';
 import { DatabaseService } from 'src/app/_services/database.service';
+import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-record-form',

@@ -5,8 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
-import { Item } from '../_interfaces/item';
-import { Reservation } from 'src/app/_interfaces/reservation';
+import { Item, Reservation } from 'src/app/_resources/interfaces';
 import { DatabaseService } from '../_services/database.service';
 
 @Component({

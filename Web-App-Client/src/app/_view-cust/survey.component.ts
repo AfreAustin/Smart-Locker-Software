@@ -4,10 +4,8 @@ import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import { ComponentCanDeactivate } from 'src/app/_services/prevent-leave.guard';
-
-import { Record } from 'src/app/_interfaces/record';
-import { Reservation } from 'src/app/_interfaces/reservation';
 import { DatabaseService } from 'src/app/_services/database.service';
+import { Record, Reservation } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-survey',

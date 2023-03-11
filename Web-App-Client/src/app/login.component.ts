@@ -3,26 +3,26 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
-import { Account } from './_interfaces/account';
 import { AuthService } from './_services/auth.service';
 import { DatabaseService } from './_services/database.service';
+import { Account } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-login',
   template: `
   <div class="login"> 
-    <img class="login-img" src="assets/logo.png">
-    <p class="error-msg"> {{message}} </p>
+    <img class="login-img" src="assets/icons/logo.svg">
 
     <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()">
+      <p class="error-msg"> {{message}} </p>
+
       <input class="login-input" type="email" formControlName="userName" placeholder="Email">
-      <br>
       <input class="login-input" type="password" formControlName="password" placeholder="Password">
-      <br>
+      
       <button class="bubble-button" type="submit" [disabled]="loginForm.invalid"> Log In </button>
+      <br>
+      <button class="bubble-button" (click)="RFIDlogin()"> Scan RFID </button>
     </form>
-    
-    <button class="bubble-button" (click)="RFIDlogin()"> Scan RFID </button>
   </div>
   `
 })
@@ -54,24 +54,27 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.RFIDSub.unsubscribe();
   }
 
-  /* 
-  *  Get login, then subscribe to accounts collection to compare username and password
-  *  On success, set session and send to homepage
-  */
-  login() {
-    const inUser = this.loginForm.get('userName')?.value;
-    const inPass = this.loginForm.get('password')?.value;
+  get userName() { return this.loginForm.get('userName')!; }
+  get password() { return this.loginForm.get('password')!; }
 
-    this.accounts$ = this.databaseService.getAccounts();
-    this.loginSub = this.accounts$.subscribe( accounts => {
-      for (let user of accounts) {
-        if (inUser == user.userName && inPass == user.password ) {
-          if (user.userType == "manager") localStorage.setItem('isManager', "true");
-          localStorage.setItem('userInfo', user.userName + ' ' + user.foreName + ' ' + user.lastName + ' ' + user.userRFID + ' ' + user._id);
-          
-          this.router.navigate(['/customer/items']);
-        } else this.message = "Invalid Login, try again";
-      }
+  /* 
+  *  Get credentials from form, then send to server for authentication
+  *  On success, set session with userName and userType
+  *  Then send to homepage
+  */
+  login() : void {
+    let body: any = {
+      userName: this.userName.value,
+      password: this.password.value,
+    };
+
+    this.databaseService.login(body).subscribe({
+      next: (res) => {
+        localStorage.setItem('userName', this.userName.value);
+        if (res == "manager") localStorage.setItem('isManager', "true");
+        
+        this.router.navigate(['/customer/items']);
+      }, error: () => { this.message = "Wrong username or password"; }
     });
   }
 
@@ -95,7 +98,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         console.log('DB:' + typeof user.userRFID + ' Scan: ' + typeof this.gotRFID.toString());
         if (this.gotRFID.toString() == user.userRFID ) {
           if (user.userType == "manager") localStorage.setItem('isManager', "true");
-          localStorage.setItem('userInfo', user.userName + ' ' + user.foreName + ' ' + user.lastName + ' ' + user.userRFID + ' ' + user._id);
+          localStorage.setItem('userName', this.userName.value );
           
           this.router.navigate(['/customer/items']);
         } else this.message = 'Bad Read, try again';

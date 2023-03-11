@@ -6,11 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
 import { DatabaseService } from '../_services/database.service';
-import { Account } from 'src/app/_interfaces/account';
-import { Item } from 'src/app/_interfaces/item';
-import { Locker } from 'src/app/_interfaces/locker';
-import { Record } from 'src/app/_interfaces/record';
-import { Reservation } from 'src/app/_interfaces/reservation';
+import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-manager-home',

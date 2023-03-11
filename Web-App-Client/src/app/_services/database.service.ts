@@ -2,17 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 
-import { Account } from '../_interfaces/account';
-import { Item } from '../_interfaces/item';
-import { Locker } from '../_interfaces/locker';
-import { Reservation } from '../_interfaces/reservation';
-import { Record } from '../_interfaces/record';
+import { Account, Item, Locker, Reservation, Record } from 'src/app/_resources/interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
-  private url = 'http://localhost:5200';  // for remote dev
+  private url = 'http://localhost:5200';  // for local dev
   // private url = 'http://10.13.86.178:5200'; // for on-site dev
   private accounts$: Subject<Account[]> = new Subject();
   private items$: Subject<Item[]> = new Subject();
@@ -31,93 +27,56 @@ export class DatabaseService {
   // email notifications
   sendMail(body: string) { return this.httpClient.post(`${this.url}/email`, body, { responseType: 'text' }) }
 
+  login(body: any) { return this.httpClient.post(`${this.url}/login`, body, { responseType: `text` }); }
+  reserve(item: string, body: any) { return this.httpClient.post(`${this.url}/reserve/${item}`, body); }
+
   // ----- Accounts -----
-  // update website-stored accounts collection from database
-  private refreshAccounts() {
-    this.httpClient.get<Account[]>(`${this.url}/manage/accounts`)
-      .subscribe(accounts => {
-        this.accounts$.next(accounts);
-      });
-  }
-  // get accounts collection
   getAccounts(): Subject<Account[]> {
-    this.refreshAccounts();
+    this.httpClient.get<Account[]>(`${this.url}/fetch/acct/all`).subscribe(accounts => { this.accounts$.next(accounts); });
     return this.accounts$;
   }
-  getAccount(id: string): Observable<Account> { return this.httpClient.get<Account>(`${this.url}/manage/accounts/${id}`); }
-  createAccount(account: Account): Observable<string> { return this.httpClient.post(`${this.url}/manage/accounts`, account, { responseType: 'text' }); }
-  updateAccount(id: string, account: Account): Observable<string> { return this.httpClient.put(`${this.url}/manage/accounts/${id}`, account, { responseType: 'text' }); }
-  deleteAccount(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/manage/accounts/${id}`, { responseType: 'text' }); }
+  getAccount(id: string): Observable<Account> { return this.httpClient.get<Account>(`${this.url}/fetch/acct/${id}`); }
+  createAccount(account: Account): Observable<string> { return this.httpClient.post(`${this.url}/new/acct`, account, { responseType: 'text' }); }
+  updateAccount(id: string, account: Account): Observable<string> { return this.httpClient.put(`${this.url}/edit/acct/${id}`, account, { responseType: 'text' }); }
+  deleteAccount(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/delete/acct/${id}`, { responseType: 'text' }); }
 
   // ----- Items -----
-  // update website-stored items collection from database
-  private refreshItems() {
-    this.httpClient.get<Item[]>(`${this.url}/manage/items`)
-      .subscribe(items => {
-        this.items$.next(items);
-      });
-  }
-  // get items collection
   getItems(): Subject<Item[]> {
-    this.refreshItems();
+    this.httpClient.get<Item[]>(`${this.url}/fetch/item/all`).subscribe(items => { this.items$.next(items); });
     return this.items$;
   }
-  getItem(id: string): Observable<Item> { return this.httpClient.get<Item>(`${this.url}/manage/items/${id}`); }
-  createItem(item: Item): Observable<string> { return this.httpClient.post(`${this.url}/manage/items`, item, { responseType: 'text' }); }
-  updateItem(id: string, item: Item): Observable<string> { return this.httpClient.put(`${this.url}/manage/items/${id}`, item, { responseType: 'text' }); }
-  deleteItem(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/manage/items/${id}`, { responseType: 'text' }); }
+  getItem(id: string): Observable<Item> { return this.httpClient.get<Item>(`${this.url}/fetch/item/${id}`); }
+  createItem(item: Item): Observable<string> { return this.httpClient.post(`${this.url}/new/item`, item, { responseType: 'text' }); }
+  updateItem(id: string, item: Item): Observable<string> { return this.httpClient.put(`${this.url}/edit/item/${id}`, item, { responseType: 'text' }); }
+  deleteItem(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/delete/item/${id}`, { responseType: 'text' }); }
 
   // ----- Lockers -----
-  // update website-stored lockers collection from database
-  private refreshLockers() {
-    this.httpClient.get<Locker[]>(`${this.url}/manage/lockers`)
-      .subscribe(lockers => {
-        this.lockers$.next(lockers);
-      });
-  }
-  // get lockers collection
   getLockers(): Subject<Locker[]> {
-    this.refreshLockers();
+    this.httpClient.get<Locker[]>(`${this.url}/fetch/lock/all`).subscribe(lockers => { this.lockers$.next(lockers); });
     return this.lockers$;
   }
-  getLocker(id: string): Observable<Locker> { return this.httpClient.get<Locker>(`${this.url}/manage/lockers/${id}`); }
-  createLocker(locker: Locker): Observable<string> { return this.httpClient.post(`${this.url}/manage/lockers`, locker, { responseType: 'text' }); }
-  updateLocker(id: string, locker: Locker): Observable<string> { return this.httpClient.put(`${this.url}/manage/lockers/${id}`, locker, { responseType: 'text' }); }
-  deleteLocker(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/manage/lockers/${id}`, { responseType: 'text' }); }
-
-  // ----- Reservations -----
-  // update website-stored reservations collection from database
-  private refreshReservations() {
-    this.httpClient.get<Reservation[]>(`${this.url}/manage/reservations`)
-      .subscribe(reservations => {
-        this.reservations$.next(reservations);
-      });
-  }
-  // get reservations collection
-  getReservations(): Subject<Reservation[]> {
-    this.refreshReservations();
-    return this.reservations$;
-  }
-  getReservation(id: string): Observable<Reservation> { return this.httpClient.get<Reservation>(`${this.url}/manage/reservations/${id}`); }
-  createReservation(reservation: Reservation): Observable<string> { return this.httpClient.post(`${this.url}/manage/reservations`, reservation, { responseType: 'text' }); }
-  updateReservation(id: string, reservation: Reservation): Observable<string> { return this.httpClient.put(`${this.url}/manage/reservations/${id}`, reservation, { responseType: 'text' }); }
-  deleteReservation(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/manage/reservations/${id}`, { responseType: 'text' }); }
+  getLocker(id: string): Observable<Locker> { return this.httpClient.get<Locker>(`${this.url}/fetch/lock/${id}`); }
+  createLocker(locker: Locker): Observable<string> { return this.httpClient.post(`${this.url}/new/lock`, locker, { responseType: 'text' }); }
+  updateLocker(id: string, locker: Locker): Observable<string> { return this.httpClient.put(`${this.url}/edit/lock/${id}`, locker, { responseType: 'text' }); }
+  deleteLocker(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/delete/lock/${id}`, { responseType: 'text' }); }
 
   // ----- Records -----
-  // update website-stored records collection from database
-  private refreshRecords() {
-    this.httpClient.get<Record[]>(`${this.url}/manage/records`)
-      .subscribe(records => {
-        this.records$.next(records);
-      });
-  }
-  // get records collection
   getRecords(): Subject<Record[]> {
-    this.refreshRecords();
+    this.httpClient.get<Record[]>(`${this.url}/fetch/rcrd/all`).subscribe(records => { this.records$.next(records); });
     return this.records$;
   }
-  getRecord(id: string): Observable<Record> { return this.httpClient.get<Record>(`${this.url}/manage/records/${id}`); }
-  createRecord(record: Record): Observable<string> { return this.httpClient.post(`${this.url}/manage/records`, record, { responseType: 'text' }); }
-  updateRecord(id: string, record: Record): Observable<string> { return this.httpClient.put(`${this.url}/manage/records/${id}`, record, { responseType: 'text' }); }
-  deleteRecord(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/manage/records/${id}`, { responseType: 'text' }); }
+  getRecord(id: string): Observable<Record> { return this.httpClient.get<Record>(`${this.url}/fetch/rcrd/${id}`); }
+  createRecord(record: Record): Observable<string> { return this.httpClient.post(`${this.url}/new/rcrd`, record, { responseType: 'text' }); }
+  updateRecord(id: string, record: Record): Observable<string> { return this.httpClient.put(`${this.url}/edit/rcrd/${id}`, record, { responseType: 'text' }); }
+  deleteRecord(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/delete/rcrd/${id}`, { responseType: 'text' }); }
+
+  // ----- Reservations -----
+  getReservations(): Subject<Reservation[]> {
+    this.httpClient.get<Reservation[]>(`${this.url}/fetch/rsrv/all`).subscribe(reservations => { this.reservations$.next(reservations); });
+    return this.reservations$;
+  }
+  getReservation(id: string): Observable<Reservation> { return this.httpClient.get<Reservation>(`${this.url}/fetch/rsrv/${id}`); }
+  createReservation(reservation: Reservation): Observable<string> { return this.httpClient.post(`${this.url}/new/rsrv`, reservation, { responseType: 'text' }); }
+  updateReservation(id: string, reservation: Reservation): Observable<string> { return this.httpClient.put(`${this.url}/edit/rsrv/${id}`, reservation, { responseType: 'text' }); }
+  deleteReservation(id: string): Observable<string> { return this.httpClient.delete(`${this.url}/delete/rsrv/${id}`, { responseType: 'text' }); }
 }

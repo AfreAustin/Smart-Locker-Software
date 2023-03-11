@@ -3,25 +3,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-import { Item } from 'src/app/_interfaces/item';
-import { Reservation } from 'src/app/_interfaces/reservation';
 import { DatabaseService } from 'src/app/_services/database.service';
+import { Item, Reservation } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-item-details',
   template: `
-  <h2 routerLink="/customer/items" class="item-detail-nav"> &lt; Back </h2> 
+  <h2 routerLink="/customer/items" class="item-detail-nav"> Back </h2> 
+
   <div class="item-detail" *ngIf="(item$ | async) as item">
     <img [src]="item.itemIcon">
     <div>
-      <h1>{{ item.itemName }}</h1>
-      <p>
-        {{ (item.itemFree == true ) ? 'Available' : 'Not Available' }} for Pickup
-        <br> Requirements: {{ item.itemReqs }}
-        <br> Description: <br> &nbsp; {{ item.itemDesc }}
-      </p>
+      <h1> {{ item.itemName }} </h1>
+      <p> &nbsp; {{ item.itemDesc }} </p>
       <br>
-      <form [formGroup]="reserveForm" (ngSubmit)="reserve(item)">
+      <form [formGroup]="reserveForm" (ngSubmit)="TESTreserve(item._id!)">
+        {{ (item.itemFree == true) ? 'Available' : 'Not Available' }} for Pickup
         <div>
           <label> Start Time </label>
           <input class="item-detail-input" type="datetime-local" formControlName="strtTime">
@@ -70,7 +67,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
   get stopTime() { return this.reserveForm.get('stopTime')!; }
 
   /* 
-  *  Parse date to store into database 
+  *  Convert date to store into database 
   *  from string YYYY-MM-DDTHH:MM to number YYYYMMDDHHMM
   */
   private convertDate(date: string): Number {
@@ -87,20 +84,20 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
     return dateNum;
   }
 
-  private getUserNameFromInfo(): string {
-    let cacheInfo = localStorage.getItem("userInfo")?.toString();
-    if (cacheInfo) {
-      let cacheStr = cacheInfo.split(" ");
-      let userName = cacheStr[0];
-      return userName;
-    } else return '';
-  }
-
   /*
   *  Reserve item for user if it is available
   *  Get reservations, then check against start and stop times for conficts
   *  If there are time conflicts, show message with conflict  
   */
+  TESTreserve(item: string) {
+    if (item) {
+      let strt = this.convertDate(this.strtTime.getRawValue());
+      let stop = this.convertDate(this.stopTime.getRawValue());
+
+      
+    }
+  }
+
   reserve(item: Item) {
     this.reservation$ = this.databaseService.getReservations();
     this.checkSub = this.reservation$.subscribe( reservations => {
@@ -134,7 +131,7 @@ export class ItemDetailsComponent implements OnInit, OnDestroy {
           let rsrv: Reservation = {
             "itemName": item.itemName,
             "itemLock": item.itemLock,
-            "userName": this.getUserNameFromInfo(),
+            "userName": localStorage.getItem("userName")?.toString(),
             "strtTime": strt,
             "stopTime": stop,
             "pickedUp": false

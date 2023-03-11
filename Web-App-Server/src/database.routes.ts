@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const request = require('request');
 
 import { collections } from "./database";
+import { Item, Reservation } from "./interfaces";
 export const databaseRouter = express.Router();
 databaseRouter.use(express.json());
 
@@ -50,15 +51,12 @@ databaseRouter.get("/getRFID", async (req, res) => {
     try {
         // This returns just the RFID number (or NO:ACK: on fail)
         request.post("http://127.0.0.1:5201/getRFID", (error: any, response: any, body: any) => {
-            if (error) { return console.log(error);}
+            if (error) return console.log(error); 
+            
             console.log(body);
-            if(body == "NO:ACK:") {
-                res.status(200).send(body);
-            } else if (body.length > 13) {//(body.split(":")[2] > 6) {
-                res.status(200).send(body.split(":")[2].substring(4));
-            } else {
-               res.status(200).send(body);
-            }
+            if (body == "NO:ACK:") res.status(200).send(body);
+            else if (body.length > 13) res.status(200).send(body.split(":")[2].substring(4));
+            else res.status(200).send(body);
         }).body = ":1:RFID:";
     } catch (error) {
         res.status(400).send(error.message);
@@ -91,502 +89,281 @@ databaseRouter.post("/email", (req, res) => {
     }
 });
 
-// ------------ Accounts ------------
-
-// get accounts collection
-databaseRouter.get("/manage/accounts", async (_req, res) => {
+/*
+*  logs user in if correct credentials are received
+*  queries database for username; on success, compares password
+*/
+databaseRouter.post("/login", async(req, res) => {
     try {
-        // pass collection into empty object, convert cursor to array
-        const accounts = await collections.accounts.find({}).toArray();
-        res.status(200).send(accounts);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-});
+        const [ reqUser, reqPass ] = [ req.body.userName, req.body.password ];
+        const query = { userName: reqUser };
 
-// get one account
-databaseRouter.get("/manage/accounts/:id", async (req, res) => {
-    try {
-        // convert string _id into ObjectID 
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // get account using id
         const account = await collections.accounts.findOne(query);
         if (account) {
-            res.status(200).send(account);
+            if (account.password == reqPass) res.status(200).send(account.userType);    // if (account.password == reqPass || account.userRFID == reqUser)
+            else res.status(400).send(`Wrong username or password`);
         } else {
-            res.status(404).send(`Failed to find an account: id ${id}`);
+            res.status(404).send(`Failed to find account: email ${reqUser}`);
         }
-
-    } catch (error) {
-        res.status(404).send(`Failed to find an account: id ${req?.params?.id}`);
-    }
-});
-
-// create new account
-databaseRouter.post("/manage/accounts", async (req, res) => {
-    try {
-        // get account details from client request
-        const account = req.body;
-
-        // insert account into database
-        const result = await collections.accounts.insertOne(account);
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new account: id ${result.insertedId}.`);
-        } else {
-            res.status(500).send("Failed to create a new account.");
-        }
-
     } catch (error) {
         console.error(error);
-        res.status(400).send(error.message);
-    }
-});
-
-// update existing account
-databaseRouter.put("/manage/accounts/:id", async (req, res) => {
-    try {
-        // query database for account and get account details from client request
-        const id = req?.params?.id;
-        const account = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-
-        // update account in database
-        const result = await collections.accounts.updateOne(query, { $set: account });
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated an account: id ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find an account: id ${id}`);
-        } else {
-            res.status(304).send(`Failed to update an account: id ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// delete existing account
-databaseRouter.delete("/manage/accounts/:id", async (req, res) => {
-    try {
-        // query database for account
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // delete account from database
-        const result = await collections.accounts.deleteOne(query);
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed an account: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove an account: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find an account: ID ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// ------------ Items ------------
-
-// get items collection
-databaseRouter.get("/manage/items", async (_req, res) => {
-    try {
-        // pass collection into empty object, convert cursor to array
-        const items = await collections.items.find({}).toArray();
-        res.status(200).send(items);
-    } catch (error) {
         res.status(500).send(error.message);
     }
 });
 
-// get one item
-databaseRouter.get("/manage/items/:id", async (req, res) => {
+/* 
+*  reserves an item for a user
+*/
+databaseRouter.post("/reserve/:id", async(req, res) => {
     try {
-        // convert string _id into ObjectID 
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // get item using id
-        const item = await collections.items.findOne(query);
-        if (item) {
-            res.status(200).send(item);
-        } else {
-            res.status(404).send(`Failed to find an item: id ${id}`);
-        }
-
-    } catch (error) {
-        res.status(404).send(`Failed to find an item: id ${req?.params?.id}`);
-    }
-});
-
-// create new item
-databaseRouter.post("/manage/items", async (req, res) => {
-    try {
-        // get item details from client request
-        const item = req.body;
-
-        // insert item into database
-        const result = await collections.items.insertOne(item);
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new item: id ${result.insertedId}.`);
-        } else {
-            res.status(500).send("Failed to create a new item.");
-        }
-
-    } catch (error) {
-        console.error(error);
-        res.status(400).send(error.message);
-    }
-});
-
-// update existing item
-databaseRouter.put("/manage/items/:id", async (req, res) => {
-    try {
-        // query database for item and get item details from client request
-        const id = req?.params?.id;
-        const item = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-
-        // update item in database
-        const result = await collections.items.updateOne(query, { $set: item });
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated an item: id ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find an item: id ${id}`);
-        } else {
-            res.status(304).send(`Failed to update an item: id ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// delete existing item
-databaseRouter.delete("/manage/items/:id", async (req, res) => {
-    try {
-        // query database for item
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // delete item from database
-        const result = await collections.items.deleteOne(query);
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed an item: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove an item: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find an item: ID ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// ------------ Lockers ------------
-
-// get lockers collection
-databaseRouter.get("/manage/lockers", async (_req, res) => {
-    try {
-        // pass collection into empty object, convert cursor to array
-        const lockers = await collections.lockers.find({}).toArray();
-        res.status(200).send(lockers);
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-});
-
-// get one locker
-databaseRouter.get("/manage/lockers/:id", async (req, res) => {
-    try {
-        // convert string _id into ObjectID 
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // get locker using id
-        const locker = await collections.lockers.findOne(query);
-        if (locker) {
-            res.status(200).send(locker);
-        } else {
-            res.status(404).send(`Failed to find a locker: id ${id}`);
-        }
-
-    } catch (error) {
-        res.status(404).send(`Failed to find a locker: id ${req?.params?.id}`);
-    }
-});
-
-// create new locker
-databaseRouter.post("/manage/lockers", async (req, res) => {
-    try {
-        // get locker details from client request
-        const locker = req.body;
-
-        // insert locker into database
-        const result = await collections.lockers.insertOne(locker);
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new locker: id ${result.insertedId}.`);
-        } else {
-            res.status(500).send("Failed to create a new locker.");
-        }
-
-    } catch (error) {
-        console.error(error);
-        res.status(400).send(error.message);
-    }
-});
-
-// update existing locker
-databaseRouter.put("/manage/lockers/:id", async (req, res) => {
-    try {
-        // query database for locker and get locker details from client request
-        const id = req?.params?.id;
-        const locker = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-
-        // update locker in database
-        const result = await collections.lockers.updateOne(query, { $set: locker });
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated a locker: id ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find a locker: id ${id}`);
-        } else {
-            res.status(304).send(`Failed to update a locker: id ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// delete existing locker
-databaseRouter.delete("/manage/lockers/:id", async (req, res) => {
-    try {
-        // query database for locker
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // delete locker from database
-        const result = await collections.lockers.deleteOne(query);
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed a locker: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove a locker: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find a locker: ID ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// ------------ Reservations ------------
-
-// get reservations collection
-databaseRouter.get("/manage/reservations", async (_req, res) => {
-    try {
-        // pass collection into empty object, convert cursor to array
+        const item = req.params.id ;
+        const [ user, strt, stop ] = [ req.body.reqUser, req.body.reqStrt, req.body.reqStop ];
         const reservations = await collections.reservations.find({}).toArray();
-        res.status(200).send(reservations);
+
+        res.status(200).send(`good`);
+
     } catch (error) {
+        console.error(error);
         res.status(500).send(error.message);
     }
 });
 
-// get one reservation
-databaseRouter.get("/manage/reservations/:id", async (req, res) => {
+/* 
+*  Finds an object of a collection based on its mongo object ID
+*/
+databaseRouter.get("/fetch/:element/:id", async (req, res) => {
     try {
-        // convert string _id into ObjectID 
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // get reservation using id
-        const reservation = await collections.reservations.findOne(query);
-        if (reservation) {
-            res.status(200).send(reservation);
-        } else {
-            res.status(404).send(`Failed to find a reservation: id ${id}`);
+        const [ element, id ] = [ req?.params?.element, req?.params?.id ];
+        switch ( element ) {
+            case 'acct':
+                if (id == 'all') {
+                    try {
+                        const accounts = await collections.accounts.find({}).toArray();
+                        res.status(200).send(accounts);
+                    } catch (error) { res.status(500).send(error.message); }
+                } else {
+                    try {
+                        const query = { _id: new mongodb.ObjectId(id) };                        
+                        const account = await collections.accounts.findOne(query);
+
+                        if (account) res.status(200).send(account);
+                        else res.status(404).send(`Failed to find account: id ${id}`);
+                    } catch (error) { res.status(404).send(`Failed to find account: id ${req?.params?.id}`); }
+                }
+                break;
+            case 'item':
+                if (id == 'all') {
+                    try {
+                        const items = await collections.items.find({}).toArray();
+                        res.status(200).send(items);
+                    } catch (error) { res.status(500).send(error.message); }
+                } else {
+                    try {
+                        const query = { _id: new mongodb.ObjectId(id) };
+                        const item = await collections.items.findOne(query);
+
+                        if (item) res.status(200).send(item);
+                        else res.status(404).send(`Failed to find item: id ${id}`);
+                    } catch (error) { res.status(404).send(`Failed to find item: id ${req?.params?.id}`); }
+                }
+                break;
+            case 'lock':
+                if (id == 'all') {
+                    try {
+                        const lockers = await collections.lockers.find({}).toArray();
+                        res.status(200).send(lockers);
+                    } catch (error) { res.status(500).send(error.message); }
+                } else {
+                    try {
+                        const query = { _id: new mongodb.ObjectId(id) };
+                        const locker = await collections.lockers.findOne(query);
+
+                        if (locker) res.status(200).send(locker);
+                        else res.status(404).send(`Failed to find locker: id ${id}`);
+                    } catch (error) { res.status(404).send(`Failed to find locker: id ${req?.params?.id}`); }
+                }
+                break;
+            case 'rcrd':
+                if (id == 'all') {
+                    try {
+                        const records = await collections.records.find({}).toArray();
+                        res.status(200).send(records);
+                    } catch (error) { res.status(500).send(error.message); }
+                } else {
+                    try {
+                        const query = { _id: new mongodb.ObjectId(id) };
+                        const record = await collections.records.findOne(query);
+
+                        if (record) res.status(200).send(record);
+                        else res.status(404).send(`Failed to find record: id ${id}`);
+                    } catch (error) { res.status(404).send(`Failed to find record: id ${req?.params?.id}`); }
+                }
+                break;
+            case 'rsrv':
+                if (id == 'all') {
+                    try {
+                        const reservations = await collections.reservations.find({}).toArray();
+                        res.status(200).send(reservations);
+                    } catch (error) { res.status(500).send(error.message); }
+                } else {
+                    try {
+                        const query = { _id: new mongodb.ObjectId(id) };
+                        const reservation = await collections.reservations.findOne(query);
+
+                        if (reservation) res.status(200).send(reservation);
+                        else res.status(404).send(`Failed to find reservation: id ${id}`);
+                    } catch (error) { res.status(404).send(`Failed to find reservation: id ${req?.params?.id}`); }
+                }
+                break;
+            default:
+                res.status(404).send(`Failed to find collection: ${req?.params?.element}`);
         }
 
-    } catch (error) {
-        res.status(404).send(`Failed to find a reservation: id ${req?.params?.id}`);
-    }
+    } catch (error) { res.status(500).send(error.message); }
 });
 
-// create new reservation
-databaseRouter.post("/manage/reservations", async (req, res) => {
+//  create new element
+databaseRouter.post("/new/:element", async (req, res) => {
+    const newElem = req.body;
+    const element = req?.params?.element;
+
     try {
-        // get reservation details from client request
-        const reservation = req.body;
+        switch ( element ) {
+            case 'acct':
+                const account = await collections.accounts.insertOne(newElem);
 
-        // insert reservation into database
-        const result = await collections.reservations.insertOne(reservation);
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new reservation: id ${result.insertedId}.`);
-        } else {
-            res.status(500).send("Failed to create a new reservation.");
+                if (account.acknowledged) res.status(201).send(`Created new account: id ${account.insertedId}`);
+                else res.status(500).send("Failed to create account");
+                break;
+            case 'item':
+                const item = await collections.items.insertOne(newElem);
+
+                if (item.acknowledged) res.status(201).send(`Created new item: id ${item.insertedId}`);
+                else res.status(500).send("Failed to create item");
+                break;
+            case 'lock':
+                const locker = await collections.lockers.insertOne(newElem);
+
+                if (locker.acknowledged) res.status(201).send(`Created new locker: id ${locker.insertedId}`);
+                else res.status(500).send("Failed to create locker");
+                break;
+            case 'rcrd':
+                const record = await collections.records.insertOne(newElem);
+
+                if (record.acknowledged) res.status(201).send(`Created new record: id ${record.insertedId}`);
+                else res.status(500).send("Failed to create record");
+                break;
+            case 'rsrv':
+                const reservation = await collections.reservations.insertOne(newElem);
+
+                if (reservation.acknowledged) res.status(201).send(`Created new reservation: id ${reservation.insertedId}`);
+                else res.status(500).send("Failed to create reservation");
+                break;
+            default: res.status(404).send(`Failed to find collection: ${req?.params?.element}`);
         }
-
     } catch (error) {
         console.error(error);
-        res.status(400).send(error.message);
-    }
-});
-
-// update existing reservation
-databaseRouter.put("/manage/reservations/:id", async (req, res) => {
-    try {
-        // query database for reservation and get reservation details from client request
-        const id = req?.params?.id;
-        const reservation = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-
-        // update reservation in database
-        const result = await collections.reservations.updateOne(query, { $set: reservation });
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated a reservation: id ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find a reservation: id ${id}`);
-        } else {
-            res.status(304).send(`Failed to update a reservation: id ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// delete existing reservation
-databaseRouter.delete("/manage/reservations/:id", async (req, res) => {
-    try {
-        // query database for reservation
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // delete reservation from database
-        const result = await collections.reservations.deleteOne(query);
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed a reservation: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove a reservation: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find a reservation: ID ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// ------------ Records ------------
-
-// get records collection
-databaseRouter.get("/manage/records", async (_req, res) => {
-    try {
-        // pass collection into empty object, convert cursor to array
-        const records = await collections.records.find({}).toArray();
-        res.status(200).send(records);
-    } catch (error) {
         res.status(500).send(error.message);
     }
 });
 
-// get one record
-databaseRouter.get("/manage/records/:id", async (req, res) => {
+// update existing element
+databaseRouter.put("/edit/:element/:id", async (req, res) => {
+    const newElem = req.body;
+    const [ element, id ] = [ req?.params?.element, req?.params?.id ];
+    const query = { _id: new mongodb.ObjectId(id) };
+
     try {
-        // convert string _id into ObjectID 
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
-        
-        // get record using id
-        const record = await collections.records.findOne(query);
-        if (record) {
-            res.status(200).send(record);
-        } else {
-            res.status(404).send(`Failed to find a record: id ${id}`);
+        switch ( element ) {
+            case 'acct':
+                const account = await collections.accounts.updateOne(query, { $set: newElem });
+
+                if (account && account.matchedCount) res.status(200).send(`Updated account: id ${id}.`);
+                else if (!account.matchedCount) res.status(404).send(`Failed to find account: id ${id}`);
+                else res.status(304).send(`Failed to update account: id ${id}`); 
+                break;
+            case 'item':
+                const item = await collections.items.updateOne(query, { $set: newElem });
+
+                if (item && item.matchedCount) res.status(200).send(`Updated item: id ${id}.`);
+                else if (!item.matchedCount) res.status(404).send(`Failed to find item: id ${id}`);
+                else res.status(304).send(`Failed to update item: id ${id}`); 
+                break;
+            case 'lock':
+                const locker = await collections.lockers.updateOne(query, { $set: newElem });
+
+                if (locker && locker.matchedCount) res.status(200).send(`Updated locker: id ${id}.`);
+                else if (!locker.matchedCount) res.status(404).send(`Failed to find locker: id ${id}`);
+                else res.status(304).send(`Failed to update locker: id ${id}`); 
+                break;
+            case 'rcrd':
+                const record = await collections.records.updateOne(query, { $set: newElem });
+
+                if (record && record.matchedCount) res.status(200).send(`Updated record: id ${id}.`);
+                else if (!record.matchedCount) res.status(404).send(`Failed to find record: id ${id}`);
+                else res.status(304).send(`Failed to update record: id ${id}`); 
+                break;
+            case 'rsrv':
+                const reservation = await collections.reservations.updateOne(query, { $set: newElem });
+
+                if (reservation && reservation.matchedCount) res.status(200).send(`Updated reservation: id ${id}.`);
+                else if (!reservation.matchedCount) res.status(404).send(`Failed to find reservation: id ${id}`);
+                else res.status(304).send(`Failed to update reservation: id ${id}`); 
+                break;
+            default: res.status(404).send(`Failed to find collection: ${req?.params?.element}`);
         }
-
-    } catch (error) {
-        res.status(404).send(`Failed to find a record: id ${req?.params?.id}`);
-    }
-});
-
-// create new record
-databaseRouter.post("/manage/records", async (req, res) => {
-    try {
-        // get record details from client request
-        const record = req.body;
-
-        // insert record into database
-        const result = await collections.records.insertOne(record);
-        if (result.acknowledged) {
-            res.status(201).send(`Created a new record: id ${result.insertedId}.`);
-        } else {
-            res.status(500).send("Failed to create a new record.");
-        }
-
     } catch (error) {
         console.error(error);
-        res.status(400).send(error.message);
+        res.status(500).send(error.message);
     }
 });
 
-// update existing record
-databaseRouter.put("/manage/records/:id", async (req, res) => {
+// delete existing element
+databaseRouter.delete("/delete/:element/:id", async (req, res) => {
+    const [ element, id ] = [ req?.params?.element, req?.params?.id ];
+    const query = { _id: new mongodb.ObjectId(id) };
+
     try {
-        // query database for record and get record details from client request
-        const id = req?.params?.id;
-        const record = req.body;
-        const query = { _id: new mongodb.ObjectId(id) };
-
-        // update record in database
-        const result = await collections.records.updateOne(query, { $set: record });
-        if (result && result.matchedCount) {
-            res.status(200).send(`Updated a record: id ${id}.`);
-        } else if (!result.matchedCount) {
-            res.status(404).send(`Failed to find a record: id ${id}`);
-        } else {
-            res.status(304).send(`Failed to update a record: id ${id}`);
-        }
-
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
-    }
-});
-
-// delete existing record
-databaseRouter.delete("/manage/records/:id", async (req, res) => {
-    try {
-        // query database for record
-        const id = req?.params?.id;
-        const query = { _id: new mongodb.ObjectId(id) };
+        switch ( element ) {
+            case 'acct':
+                const account = await collections.accounts.deleteOne(query);
         
-        // delete record from database
-        const result = await collections.records.deleteOne(query);
-        if (result && result.deletedCount) {
-            res.status(202).send(`Removed a record: ID ${id}`);
-        } else if (!result) {
-            res.status(400).send(`Failed to remove a record: ID ${id}`);
-        } else if (!result.deletedCount) {
-            res.status(404).send(`Failed to find a record: ID ${id}`);
+                if (account && account.deletedCount) res.status(202).send(`Removed account: id ${id}`);
+                else if (!account) res.status(400).send(`Failed to remove account: id ${id}`);
+                else if (!account.deletedCount) res.status(404).send(`Failed to find account: id ${id}`);
+                break;
+            case 'item':
+                const item = await collections.items.deleteOne(query);
+        
+                if (item && item.deletedCount) res.status(202).send(`Removed item: id ${id}`);
+                else if (!item) res.status(400).send(`Failed to remove item: id ${id}`);
+                else if (!item.deletedCount) res.status(404).send(`Failed to find item: id ${id}`);
+                break;
+            case 'lock':
+                const locker = await collections.lockers.deleteOne(query);
+        
+                if (locker && locker.deletedCount) res.status(202).send(`Removed locker: id ${id}`);
+                else if (!locker) res.status(400).send(`Failed to remove locker: id ${id}`);
+                else if (!locker.deletedCount) res.status(404).send(`Failed to find locker: id ${id}`);
+                break;
+            case 'rcrd':
+                const record = await collections.records.deleteOne(query);
+        
+                if (record && record.deletedCount) res.status(202).send(`Removed record: id ${id}`);
+                else if (!record) res.status(400).send(`Failed to remove record: id ${id}`);
+                else if (!record.deletedCount) res.status(404).send(`Failed to find record: id ${id}`);
+               break;
+            case 'rsrv':
+                const reservation = await collections.reservations.deleteOne(query);
+        
+                if (reservation && reservation.deletedCount) res.status(202).send(`Removed reservation: id ${id}`);
+                else if (!reservation) res.status(400).send(`Failed to remove reservation: id ${id}`);
+                else if (!reservation.deletedCount) res.status(404).send(`Failed to find reservation: id ${id}`);
+                break;
+            default: res.status(404).send(`Failed to find collection: ${req?.params?.element}`);
         }
-
     } catch (error) {
-        console.error(error.message);
-        res.status(400).send(error.message);
+        console.error(error);
+        res.status(500).send(error.message);
     }
 });

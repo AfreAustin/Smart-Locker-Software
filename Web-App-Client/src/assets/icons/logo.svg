@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="400" height="480" viewBox="0 0 400 480" xml:space="preserve">
+<desc>Created with Fabric.js 3.6.6</desc>
+<defs>
+</defs>
+<g transform="matrix(1.32 0 0 1.32 199.97 252.61)"  >
+<g style=""   >
+		<g transform="matrix(1 0 0 1 0 140.19)" style=""  >
+		<text xml:space="preserve" font-family="'Darkmode-DarkmodeOffXBold'" font-size="55.2912" font-style="normal" font-weight="normal" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-151.23" y="17.37" >Smart Locker</tspan></text>
+</g>
+		<g transform="matrix(1 0 0 1 -1.37 -61.72)"  >
+<path style="stroke: rgb(229,231,231); stroke-width: 15; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;"  transform=" translate(-207.99, -228.14)" d="M 252.73 228.14 c 0 56.72 -20.03 102.71 -44.74 102.71 s -44.74 -45.98 -44.74 -102.71 s -1.57 -102.08 44.74 -102.71 C 252.42 124.83 252.73 171.41 252.73 228.14 z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 0.36 1.73)"  >
+<circle style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  cx="0" cy="0" r="93.34" />
+</g>
+		<g transform="matrix(1 0 0 1 0.57 0.27)"  >
+<circle style="stroke: rgb(229,231,231); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;"  cx="0" cy="0" r="31.67" />
+</g>
+		<g transform="matrix(1 0 0 1 -0.2 -60.89)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="0" y1="-19.724999999999994" x2="0" y2="19.724999999999994" />
+</g>
+		<g transform="matrix(1 0 0 1 -0.47 63.57)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="0" y1="-19.724999999999994" x2="0" y2="19.724999999999994" />
+</g>
+		<g transform="matrix(1 0 0 1 62.87 -0.18)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="19.724999999999994" y1="0" x2="-19.724999999999994" y2="0" />
+</g>
+		<g transform="matrix(1 0 0 1 -61.59 -0.46)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="19.72500000000001" y1="0" x2="-19.72500000000001" y2="0" />
+</g>
+		<g transform="matrix(1 0 0 1 37.16 -34.96)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="11.790000000000006" y1="-11.795000000000002" x2="-11.790000000000006" y2="11.795000000000002" />
+</g>
+		<g transform="matrix(1 0 0 1 -37.41 39.29)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="11.795000000000002" y1="-11.789999999999992" x2="-11.795000000000002" y2="11.789999999999992" />
+</g>
+		<g transform="matrix(1 0 0 1 38.58 39.04)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="11.795000000000016" y1="11.794999999999987" x2="-11.795000000000016" y2="-11.794999999999987" />
+</g>
+		<g transform="matrix(1 0 0 1 -35.67 -35.54)"  >
+<line style="stroke: rgb(0,0,0); stroke-width: 3; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(229,231,231); fill-rule: nonzero; opacity: 1;"  x1="11.789999999999992" y1="11.795000000000002" x2="-11.789999999999992" y2="-11.795000000000002" />
+</g>
+</g>
+</g>
+</svg>

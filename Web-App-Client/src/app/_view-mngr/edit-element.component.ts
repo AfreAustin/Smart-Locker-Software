@@ -3,11 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { DatabaseService } from 'src/app/_services/database.service';
-import { Account } from '../_interfaces/account';
-import { Item } from '../_interfaces/item';
-import { Locker } from '../_interfaces/locker';
-import { Record } from '../_interfaces/record';
-import { Reservation } from '../_interfaces/reservation';
+import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-edit-element',

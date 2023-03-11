@@ -4,10 +4,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AuthService {
-  constructor() { }
-
   logout() :void {
-    localStorage.setItem('isManager','false');
-    localStorage.removeItem('userInfo');
+    localStorage.removeItem('isManager');
+    localStorage.removeItem('userName');
   }
 }

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
-import { Account } from '../_interfaces/account'; 
+import { Account } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-account-form',

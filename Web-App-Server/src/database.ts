@@ -1,10 +1,6 @@
 import * as mongodb from "mongodb";
 
-import { Account } from "./_interfaces/account";
-import { Item } from "./_interfaces/item"
-import { Locker } from "./_interfaces/locker";
-import { Reservation } from "./_interfaces/reservation";
-import { Record } from "./_interfaces/record";
+import { Account, Item, Locker, Record, Reservation} from "./interfaces";
 
 // list of collections in a database cluster
 export const collections: {

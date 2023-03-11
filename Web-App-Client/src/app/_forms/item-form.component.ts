@@ -2,9 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { Item } from 'src/app/_interfaces/item';
-import { Locker } from 'src/app/_interfaces/locker';
 import { DatabaseService } from 'src/app/_services/database.service';
+import { Item, Locker } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-item-form',
@@ -59,32 +58,32 @@ import { DatabaseService } from 'src/app/_services/database.service';
       <label for="itemIcon"> Icon: 
         <div class="admin-radio">
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/drill.svg">
-            <img class="admin-radio-img" src="assets/item-icons/drill.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/drill.svg">
+            <img class="admin-radio-img" src="assets/icons/items/drill.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/hammer-claw.svg">
-            <img class="admin-radio-img" src="assets/item-icons/hammer-claw.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/hammer-claw.svg">
+            <img class="admin-radio-img" src="assets/icons/items/hammer-claw.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/plier-channellock.svg">
-            <img class="admin-radio-img" src="assets/item-icons/plier-channellock.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/plier-channellock.svg">
+            <img class="admin-radio-img" src="assets/icons/items/plier-channellock.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/plier-needlenose.svg">
-            <img class="admin-radio-img" src="assets/item-icons/plier-needlenose.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/plier-needlenose.svg">
+            <img class="admin-radio-img" src="assets/icons/items/plier-needlenose.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/saw-circular.svg">
-            <img class="admin-radio-img" src="assets/item-icons/saw-circular.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/saw-circular.svg">
+            <img class="admin-radio-img" src="assets/icons/items/saw-circular.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/screwdriver-flathead.svg">
-            <img class="admin-radio-img" src="assets/item-icons/screwdriver-flathead.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/screwdriver-flathead.svg">
+            <img class="admin-radio-img" src="assets/icons/items/screwdriver-flathead.svg">
           </label>
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemIcon" value="assets/item-icons/wrench-adjustable.svg">
-            <img class="admin-radio-img" src="assets/item-icons/wrench-adjustable.svg">
+            <input type="radio" formControlName="itemIcon" value="assets/icons/items/wrench-adjustable.svg">
+            <img class="admin-radio-img" src="assets/icons/items/wrench-adjustable.svg">
           </label>
         </div>
       </label>
