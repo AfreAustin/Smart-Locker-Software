@@ -14,20 +14,9 @@ import { Account, Item, Locker, Reservation } from 'src/app/_resources/interface
         <div class="admin-radio">
           <div *ngFor="let item of items$ | async">
             <label class="admin-radio-item">
-              <input type="radio" formControlName="itemName" [value]="item.itemName">
+              <input type="radio" formControlName="itemID" [value]="item._id">
               <p> {{"(" + item.itemLock + ") " + item.itemName}} </p>
             </label>
-          </div>
-        </div>
-      </label>
-    </div>
-
-    <!-- Delete and add default answer based on chosen locker -->
-    <div class="admin-question">
-      <label> In Locker: 
-        <div class="admin-radio">
-          <div *ngFor="let locker of lockers$ | async">
-            <label class="admin-radio-item"> <input type="radio" formControlName="itemLock" [value]="locker.lockName"> {{locker.lockName}} </label>
           </div>
         </div>
       </label>
@@ -36,9 +25,11 @@ import { Account, Item, Locker, Reservation } from 'src/app/_resources/interface
     <div class="admin-question">
       <label> Account:
         <div class="admin-radio">
-          <div class="admin-radio-item" *ngFor="let account of accounts$ | async">
-            <input type="radio" formControlName="userName" name="userName" id="userName" [value]="account.userName">
-            {{account.userName}}
+          <div *ngFor="let account of accounts$ | async">
+            <label class="admin-radio-item">
+              <input type="radio" formControlName="userID" [value]="account._id">
+              {{account.userName}}
+            </label>
           </div>
         </div>
       </label>
@@ -71,14 +62,15 @@ import { Account, Item, Locker, Reservation } from 'src/app/_resources/interface
       </label>
     </div>
 
-    <button class="bubble-button" type="submit" [disabled]="reservationForm.invalid">Add</button>
+    <button class="bubble-button" type="submit" [disabled]="reservationForm.invalid">Submit</button>
   </form>
   `
 })
 export class ReservationFormComponent implements OnInit {
-  items$: Observable<Item[]> = new Observable();
-  accounts$: Observable<Account[]> = new Observable();
-  lockers$: Observable<Locker[]> = new Observable();
+  public reservationForm: FormGroup = new FormGroup({});
+  public accounts$: Observable<Account[]> = new Observable();
+  public items$: Observable<Item[]> = new Observable();
+  public lockers$: Observable<Locker[]> = new Observable();
 
   @Input()
   initialState: BehaviorSubject<Reservation> = new BehaviorSubject({});
@@ -87,16 +79,13 @@ export class ReservationFormComponent implements OnInit {
   @Output()
   formSubmitted = new EventEmitter<Reservation>();
 
-  reservationForm: FormGroup = new FormGroup({});
-
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private databaseService: DatabaseService
-  ) { }
+  ) {}
 
-  get itemName() { return this.reservationForm.get('itemName')!; }
-  get itemLock() { return this.reservationForm.get('itemLock')!;}
-  get userName() { return this.reservationForm.get('userName')!; }
+  get itemID() { return this.reservationForm.get('itemID')!; }
+  get userID() { return this.reservationForm.get('userID')!; }
   get strtTime() { return this.reservationForm.get('strtTime')!; }
   get stopTime() { return this.reservationForm.get('stopTime')!; }
   get pickedUp() { return this.reservationForm.get('pickedUp')!; }
@@ -107,12 +96,11 @@ export class ReservationFormComponent implements OnInit {
     this.lockers$ = this.databaseService.getLockers();
 
     this.initialState.subscribe(reservation => {
-      this.reservationForm = this.fb.group({
-        itemName: [ reservation.itemName, [Validators.required, Validators.minLength(3)] ],
-        itemLock: [ reservation.itemLock, [Validators.required] ],
-        userName: [ reservation.userName, [Validators.required, Validators.minLength(3)] ],
-        strtTime: [ reservation.strtTime, [Validators.required] ],
-        stopTime: [ reservation.stopTime, [Validators.required] ],
+      this.reservationForm = this.formBuilder.group({
+        itemID: [ reservation.itemID, [Validators.required, Validators.minLength(3)] ],
+        userID: [ reservation.userID, [Validators.required, Validators.minLength(3)] ],
+        strtTime: [ this.convertTime(reservation.strtTime!), [Validators.required] ],
+        stopTime: [ this.convertTime(reservation.stopTime!), [Validators.required] ],
         pickedUp: [ reservation.pickedUp, [Validators.required] ]
       });
     });
@@ -120,7 +108,33 @@ export class ReservationFormComponent implements OnInit {
     this.reservationForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
   }
 
-  submitForm() {
-    this.formSubmitted.emit(this.reservationForm.value);
+  submitForm() { 
+    this.reservationForm.controls['strtTime'].setValue(this.convertDate(this.strtTime.getRawValue().toString()));
+    this.reservationForm.controls['stopTime'].setValue(this.convertDate(this.stopTime.getRawValue().toString()));
+    this.formSubmitted.emit(this.reservationForm.value); 
+  }
+
+  private convertDate(date: string): Number {
+    if (!date) return 0;
+    
+    let dateRgx = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
+    let dateArr = dateRgx.exec(date);
+    let dateNum = 
+      (+dateArr![1] * 100000000) + 
+      (+dateArr![2] * 1000000) + 
+      (+dateArr![3] * 10000) +
+      (+dateArr![4] * 100) +
+      (+dateArr![5]);
+    return dateNum;
+  }
+
+  private convertTime(time: Number): string {
+    if (!time) return "";
+
+    let timeRgx = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})/;
+    let timeArr = timeRgx.exec(time.toString());
+    let timeStr = timeArr![1] + "-" + timeArr![2] + "-" + timeArr![3] + "T" + timeArr![4] + ":" + timeArr![5];
+
+    return timeStr;
   }
 }

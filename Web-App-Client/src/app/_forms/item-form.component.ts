@@ -27,15 +27,6 @@ import { Item, Locker } from 'src/app/_resources/interfaces';
     </div>
     
     <div class="admin-question">
-      <label for="itemReqs">Requirements:
-        <select id="itemReqs" formControlName="itemReqs">
-          <option value="none"> None </option>
-          <option value="some"> Some </option>
-        </select>
-      </label>
-    </div>
-
-    <div class="admin-question">
       <label> Available:
         <div class="admin-radio">
           <label class="admin-radio-item"> <input type="radio" formControlName="itemFree" [value]="true"> Yes </label>
@@ -89,13 +80,18 @@ import { Item, Locker } from 'src/app/_resources/interfaces';
       </label>
     </div>
 
-    <button class="bubble-button" type="submit" [disabled]="itemForm.invalid"> Create </button>
+    <button class="bubble-button" type="submit" [disabled]="itemForm.invalid"> Submit </button>
   </form>
   `
 })
 export class ItemFormComponent implements OnInit {
-  lockers$: Observable<Locker[]> = new Observable();
+  public itemForm: FormGroup = new FormGroup({});
+  public lockers$: Observable<Locker[]> = new Observable();
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private databaseService: DatabaseService
+  ) { }
   @Input()
   initialState: BehaviorSubject<Item> = new BehaviorSubject({});
   @Output()
@@ -103,40 +99,27 @@ export class ItemFormComponent implements OnInit {
   @Output()
   formSubmitted = new EventEmitter<Item>();
 
-  itemForm: FormGroup = new FormGroup({});
-
-  constructor(
-    private fb: FormBuilder,
-    private databaseService: DatabaseService
-  ) { }
-
   get itemName() { return this.itemForm.get('itemName')!; }
   get itemDesc() { return this.itemForm.get('itemDesc')!; }
   get itemIcon() { return this.itemForm.get('itemIcon')!; }
   get itemLock() { return this.itemForm.get('itemLock')!; }
-  get itemReqs() { return this.itemForm.get('itemReqs')!; }
   get itemFree() { return this.itemForm.get('itemFree')!; }
 
   ngOnInit() {
     this.lockers$ = this.databaseService.getLockers();
 
     this.initialState.subscribe(item => {
-      this.itemForm = this.fb.group({
+      this.itemForm = this.formBuilder.group({
         itemName: [ item.itemName, [Validators.required, Validators.minLength(3)] ],
         itemDesc: [ item.itemDesc, [Validators.required] ],
-        itemIcon: [ item.itemIcon, [Validators.required, Validators.minLength(3)] ],
-        itemLock: [ item.itemLock, [Validators.required ] ],
-        itemReqs: [ item.itemReqs, [Validators.required] ],
+        itemIcon: [ item.itemIcon, [Validators.required] ],
+        itemLock: [ item.itemLock, [Validators.required] ],
         itemFree: [ item.itemFree, [Validators.required] ]
       });
     });
 
-    // changed state of form
     this.itemForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
   }
 
-  // emits values in form
-  submitForm() {
-    this.formSubmitted.emit(this.itemForm.value);
-  }
+  submitForm() { this.formSubmitted.emit(this.itemForm.value); }
 }

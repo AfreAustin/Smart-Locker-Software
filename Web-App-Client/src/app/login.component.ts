@@ -27,13 +27,14 @@ import { Account } from 'src/app/_resources/interfaces';
   `
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  private accounts$: Observable<Account[]> = new Observable();
-  private loginSub: Subscription = new Subscription();
-  private RFIDSub: Subscription = new Subscription();
-  loginForm: FormGroup = new FormGroup({});
+  public loginForm: FormGroup = new FormGroup({});
+  public message: string = '';
+
+  accounts$: Observable<Account[]> = new Observable();
+  loginSub: Subscription = new Subscription();
+  RFIDSub: Subscription = new Subscription();
   rfidAcc: Account[] = [];
   gotRFID: string = "";
-  message: string = '';
 
   constructor(
     private router: Router,
@@ -70,11 +71,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.databaseService.login(body).subscribe({
       next: (res) => {
-        localStorage.setItem('userName', this.userName.value);
-        if (res == "manager") localStorage.setItem('isManager', "true");
+        let response = res.split(" ");
+        localStorage.setItem('userType', response[0]);
+        localStorage.setItem('userID', response[1]);
         
         this.router.navigate(['/customer/items']);
-      }, error: () => { this.message = "Wrong username or password"; }
+      }, error: (err) => { this.message = err.error }
     });
   }
 

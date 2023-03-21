@@ -15,25 +15,22 @@ export interface Item {
     itemDesc: string;
     itemIcon: string;
     itemLock: string;
-    itemReqs: string;
     itemFree: boolean;
     _id?: mongodb.ObjectId;
 }
 
 export interface Locker {
-lockName: string;
-lastOpen: string;
-lastShut: string;
-_id?: mongodb.ObjectId;
+    lockName: string;
+    lastOpen: string;
+    lastShut: string;
+    _id?: mongodb.ObjectId;
 }
 
 export interface Record {
-    rsrvtion: string;
-    itemName: string;
-    itemLock: string;
-    userName: string;
-    strtTime: Number;
-    stopTime: Number;
+    itemID: string;
+    userID: string;
+    expect: Number;
+    actual: String;
     pickedUp: Boolean;
     itemCond: Number;
     comments: String;
@@ -41,9 +38,8 @@ export interface Record {
 }
 
 export interface Reservation {
-    itemName: string;
-    itemLock: string;
-    userName: string;
+    itemID: string;
+    userID: string;
     strtTime: Number;
     stopTime: Number;
     pickedUp: Boolean;

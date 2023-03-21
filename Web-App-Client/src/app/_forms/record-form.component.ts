@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 import { DatabaseService } from 'src/app/_services/database.service';
-import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
+import { Account, Item, Record } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-record-form',
@@ -14,7 +14,7 @@ import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
       <div class="admin-radio">
         <div *ngFor="let account of accounts$ | async">
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="userName" [value]="account.userName"> 
+            <input type="radio" formControlName="userID" [value]="account.userName"> 
             {{account.userName}}
           </label>
         </div>
@@ -27,8 +27,8 @@ import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
       <div class="admin-radio">
         <div *ngFor="let item of items$ | async">
           <label class="admin-radio-item"> 
-            <input type="radio" formControlName="itemName" [value]="item.itemName"> 
-            <p>{{"(" + item.itemLock + ") " + item.itemName}}</p>
+            <input type="radio" formControlName="itemID" [value]="item.itemName"> 
+            <p>{{item.itemName}}</p>
           </label>
         </div>
       </div>
@@ -36,38 +36,20 @@ import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
   </div>
 
   <div class="admin-question">
-    <label> In Locker: 
-      <div class="admin-radio">
-        <div *ngFor="let locker of lockers$ | async">
-          <label class="admin-radio-item"> <input type="radio" formControlName="itemLock" [value]="locker.lockName"> {{locker.lockName}} </label>
-        </div>
-      </div>
-    </label>
-  </div>
-
-  <div class="admin-question">
-    <input class="admin-text" type="text" formControlName="rsrvtion" placeholder="Reservation ID" required>
-
-    <div *ngIf="rsrvtion.invalid && (rsrvtion.dirty || rsrvtion.touched)">
-      <div class="admin-error-msg" *ngIf="rsrvtion.errors?.['required']"> required </div>
-    </div>
-  </div>
-
-  <div class="admin-question">
     <label>Start Time: </label>
-    <input class="admin-dt-local" type="datetime-local" formControlName="strtTime" required>
+    <input class="admin-dt-local" type="datetime-local" formControlName="expect" required>
 
-    <div *ngIf="strtTime.invalid && (strtTime.dirty || strtTime.touched)">
-      <div class="admin-error-msg" *ngIf="strtTime.errors?.['required']"> required </div>
+    <div *ngIf="expect.invalid && (expect.dirty || expect.touched)">
+      <div class="admin-error-msg" *ngIf="expect.errors?.['required']"> required </div>
     </div>
   </div>
 
   <div class="admin-question">
     <label>Stop Time:  </label>
-    <input class="admin-dt-local" type="datetime-local" formControlName="stopTime" required>
+    <input class="admin-dt-local" type="datetime-local" formControlName="actual" required>
 
-    <div *ngIf="stopTime.invalid && (stopTime.dirty || stopTime.touched)">
-      <div class="admin-error-msg" *ngIf="stopTime.errors?.['required']"> required </div>
+    <div *ngIf="actual.invalid && (actual.dirty || actual.touched)">
+      <div class="admin-error-msg" *ngIf="actual.errors?.['required']"> required </div>
     </div>
   </div>
 
@@ -122,15 +104,19 @@ import { Account, Item, Locker, Record } from 'src/app/_resources/interfaces';
       </label>
     </div>    
 
-  <button class="bubble-button" type="submit" [disabled]="recordForm.invalid">Add</button>
+  <button class="bubble-button" type="submit" [disabled]="recordForm.invalid">Submit</button>
   </form>
   ` 
 })
 export class RecordFormComponent implements OnInit {
-  items$: Observable<Item[]> = new Observable();
-  accounts$: Observable<Account[]> = new Observable();
-  lockers$: Observable<Locker[]> = new Observable();
+  public recordForm: FormGroup = new FormGroup({});
+  public accounts$: Observable<Account[]> = new Observable();
+  public items$: Observable<Item[]> = new Observable();
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private databaseService: DatabaseService
+  ) {}
   @Input()
   initialState: BehaviorSubject<Record> = new BehaviorSubject({});
   @Output()
@@ -138,48 +124,32 @@ export class RecordFormComponent implements OnInit {
   @Output()
   formSubmitted = new EventEmitter<Record>();
 
-  recordForm: FormGroup = new FormGroup({});
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private databaseService: DatabaseService) { }
-
-  // get record details
-  get rsrvtion() { return this.recordForm.get('rsrvtion')!; }
-  get itemName() { return this.recordForm.get('itemName')!; }
-  get itemLock() { return this.recordForm.get('itemLock')!;}
-  get userName() { return this.recordForm.get('userName')!; }
-  get strtTime() { return this.recordForm.get('strtTime')!; }
-  get stopTime() { return this.recordForm.get('stopTime')!; }
+  get itemID() { return this.recordForm.get('itemID')!; }
+  get userID() { return this.recordForm.get('userID')!; }
+  get expect() { return this.recordForm.get('expect')!; }
+  get actual() { return this.recordForm.get('actual')!; }
   get pickedUp() { return this.recordForm.get('pickedUp')!; }
   get itemCond() { return this.recordForm.get('itemCond')!; }
   get comments() { return this.recordForm.get('comments')!; }
   
-  // load current state of form
   ngOnInit() {
     this.items$ = this.databaseService.getItems();
     this.accounts$ = this.databaseService.getAccounts();
-    this.lockers$ = this.databaseService.getLockers();
 
-    // initial state of form
     this.initialState.subscribe(record => {
       this.recordForm = this.formBuilder.group({
-        rsrvtion: [ record.rsrvtion, [Validators.required] ],
-        itemName: [ record.itemName, [Validators.required, Validators.minLength(3)] ],
-        itemLock: [ record.itemLock, [Validators.required] ],
-        userName: [ record.userName, [Validators.required, Validators.minLength(3)] ],
-        strtTime: [ record.strtTime, [Validators.required] ],
-        stopTime: [ record.stopTime, [Validators.required] ],
+        itemID: [ record.itemID, [Validators.required] ],
+        userID: [ record.userID, [Validators.required] ],
+        expect: [ record.expect, [Validators.required] ],
+        actual: [ record.actual, [Validators.required] ],
         pickedUp: [ record.pickedUp, [Validators.required] ],
         itemCond: [ record.itemCond, [Validators.required] ],
         comments: [ record.comments ]
       });
     });
 
-    // changed state of form
     this.recordForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
   }
 
-  // emits values in form
   submitForm() { this.formSubmitted.emit(this.recordForm.value); }
 }

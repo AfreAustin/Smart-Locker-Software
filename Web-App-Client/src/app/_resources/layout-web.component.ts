@@ -18,11 +18,11 @@ import { Component } from '@angular/core';
         <i class="material-icons"> keyboard </i>
         <br> Keyboard
       </p>
-      <a class="sidenav-item" routerLink="/manage/home" *ngIf="userType == 'true'"> 
+      <a class="sidenav-item" routerLink="/manage/home" *ngIf="userType == 'manager'"> 
         <i class="material-icons"> perm_device_info </i>
         <br> Admin
       </a>
-      <a class="sidenav-item" *ngIf="userType == 'false'"></a>
+      <a class="sidenav-item" *ngIf="userType != 'manager'"></a>
       <a class="sidenav-item" routerLink="/login"> 
         <i class="material-icons"> logout </i>
         <br> Log Out
@@ -36,5 +36,5 @@ import { Component } from '@angular/core';
   `
 })
 export class WebLayoutComponent {
-  userType: string | undefined = localStorage.getItem('isManager')?.toString();
+  userType: string | undefined = localStorage.getItem('userType')?.toString();
 }

@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   logout() :void {
-    localStorage.removeItem('isManager');
-    localStorage.removeItem('userName');
+    localStorage.removeItem('userID');
+    localStorage.removeItem('userType');
   }
 }

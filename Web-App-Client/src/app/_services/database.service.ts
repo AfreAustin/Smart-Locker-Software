@@ -18,21 +18,22 @@ export class DatabaseService {
   
   constructor(private httpClient: HttpClient) { }
 
-  // unlock locker
-  addQueue(body: string) { return this.httpClient.post(`${this.url}/addQueue`, body, { responseType: 'text' }); }
-
-  // get RFID from scanner
+  login(body: any) { return this.httpClient.post(`${this.url}/login`, body, { responseType: `text` }); }
   getRFID(): Observable<string> { return this.httpClient.get<string>(`${this.url}/getRFID`); }
 
-  // email notifications
+  reserve(itemID: string, body: any) { return this.httpClient.post(`${this.url}/reserve/${itemID}`, body, {responseType: 'text'}); }
+  checkOut(id:string, reservation: Reservation): Observable<string> { return this.httpClient.put(`${this.url}/checkout/${id}`, reservation, { responseType: 'text' }); }
+  categorize(userID: string): Observable<Reservation[]> { return this.httpClient.get<Reservation[]>(`${this.url}/categorize/${userID}`); }
+
+  // CHECK IF STILL WORKS AFTER UPDATE
+  unlockLocker(itemID: string) { return this.httpClient.get(`${this.url}/unlock/${itemID}`, { responseType: 'text'}); }
   sendMail(body: string) { return this.httpClient.post(`${this.url}/email`, body, { responseType: 'text' }) }
 
-  login(body: any) { return this.httpClient.post(`${this.url}/login`, body, { responseType: `text` }); }
-  reserve(item: string, body: any) { return this.httpClient.post(`${this.url}/reserve/${item}`, body); }
+  getProperty(elem:string, id: string, prop: string): Observable<string> { return this.httpClient.get<string>(`${this.url}/fetch/${elem}/${id}/${prop}`); }
 
   // ----- Accounts -----
   getAccounts(): Subject<Account[]> {
-    this.httpClient.get<Account[]>(`${this.url}/fetch/acct/all`).subscribe(accounts => { this.accounts$.next(accounts); });
+    this.httpClient.get<Account[]>(`${this.url}/fetch/acct`).subscribe(accounts => { this.accounts$.next(accounts); });
     return this.accounts$;
   }
   getAccount(id: string): Observable<Account> { return this.httpClient.get<Account>(`${this.url}/fetch/acct/${id}`); }
@@ -42,7 +43,7 @@ export class DatabaseService {
 
   // ----- Items -----
   getItems(): Subject<Item[]> {
-    this.httpClient.get<Item[]>(`${this.url}/fetch/item/all`).subscribe(items => { this.items$.next(items); });
+    this.httpClient.get<Item[]>(`${this.url}/fetch/item`).subscribe(items => { this.items$.next(items); });
     return this.items$;
   }
   getItem(id: string): Observable<Item> { return this.httpClient.get<Item>(`${this.url}/fetch/item/${id}`); }
@@ -52,7 +53,7 @@ export class DatabaseService {
 
   // ----- Lockers -----
   getLockers(): Subject<Locker[]> {
-    this.httpClient.get<Locker[]>(`${this.url}/fetch/lock/all`).subscribe(lockers => { this.lockers$.next(lockers); });
+    this.httpClient.get<Locker[]>(`${this.url}/fetch/lock`).subscribe(lockers => { this.lockers$.next(lockers); });
     return this.lockers$;
   }
   getLocker(id: string): Observable<Locker> { return this.httpClient.get<Locker>(`${this.url}/fetch/lock/${id}`); }
@@ -62,7 +63,7 @@ export class DatabaseService {
 
   // ----- Records -----
   getRecords(): Subject<Record[]> {
-    this.httpClient.get<Record[]>(`${this.url}/fetch/rcrd/all`).subscribe(records => { this.records$.next(records); });
+    this.httpClient.get<Record[]>(`${this.url}/fetch/rcrd`).subscribe(records => { this.records$.next(records); });
     return this.records$;
   }
   getRecord(id: string): Observable<Record> { return this.httpClient.get<Record>(`${this.url}/fetch/rcrd/${id}`); }
@@ -72,7 +73,7 @@ export class DatabaseService {
 
   // ----- Reservations -----
   getReservations(): Subject<Reservation[]> {
-    this.httpClient.get<Reservation[]>(`${this.url}/fetch/rsrv/all`).subscribe(reservations => { this.reservations$.next(reservations); });
+    this.httpClient.get<Reservation[]>(`${this.url}/fetch/rsrv`).subscribe(reservations => { this.reservations$.next(reservations); });
     return this.reservations$;
   }
   getReservation(id: string): Observable<Reservation> { return this.httpClient.get<Reservation>(`${this.url}/fetch/rsrv/${id}`); }

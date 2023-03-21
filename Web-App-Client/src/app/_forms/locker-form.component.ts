@@ -35,11 +35,14 @@ import { Locker } from 'src/app/_resources/interfaces';
       </div>
     </div>
 
-    <button class="bubble-button" type="submit" [disabled]="lockerForm.invalid">Add</button>
+    <button class="bubble-button" type="submit" [disabled]="lockerForm.invalid">Submit</button>
   </form>
   ` 
 })
 export class LockerFormComponent implements OnInit {
+  public lockerForm: FormGroup = new FormGroup({});
+
+  constructor(private formBuilder: FormBuilder) {}
   @Input()
   initialState: BehaviorSubject<Locker> = new BehaviorSubject({});
   @Output()
@@ -47,17 +50,13 @@ export class LockerFormComponent implements OnInit {
   @Output()
   formSubmitted = new EventEmitter<Locker>();
 
-  lockerForm: FormGroup = new FormGroup({});
-
-  constructor(private fb: FormBuilder) { }
-
   get lockName() { return this.lockerForm.get('lockName')!; }
   get lastOpen() { return this.lockerForm.get('lastOpen')!; }
   get lastShut() { return this.lockerForm.get('lastShut')!; }
 
   ngOnInit() {
     this.initialState.subscribe(locker => {
-      this.lockerForm = this.fb.group({
+      this.lockerForm = this.formBuilder.group({
         lockName: [ locker.lockName, [Validators.required] ],
         lastOpen: [ locker.lastOpen, [Validators.required] ],
         lastShut: [ locker.lastShut, [Validators.required] ]
@@ -67,8 +66,5 @@ export class LockerFormComponent implements OnInit {
     this.lockerForm.valueChanges.subscribe((val) => { this.formValuesChanged.emit(val); });
   }
 
-  // emits values in form
-  submitForm() {
-    this.formSubmitted.emit(this.lockerForm.value);
-  }
+  submitForm() { this.formSubmitted.emit(this.lockerForm.value); }
 }

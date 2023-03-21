@@ -1,17 +1,16 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 
 import { DatabaseService } from '../_services/database.service';
-import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/interfaces';
+import { Record, Reservation } from 'src/app/_resources/interfaces';
 
 @Component({
   selector: 'app-manager-home',
   template: `
-  <h1> Admin: {{ custName }} </h1>
+  <h1> Admin </h1>
   <div>
     <button [ngClass]="{'admin-tab-selected' : dataSrc == 'acct', 'admin-tab' : dataSrc != 'acct'}" (click)="changeTableDataSrc('acct')"> Accounts </button>
     <button [ngClass]="{'admin-tab-selected' : dataSrc == 'item', 'admin-tab' : dataSrc != 'item'}" (click)="changeTableDataSrc('item')"> Items </button>
@@ -83,9 +82,18 @@ import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/i
       <ng-container matColumnDef="pickedUp">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Event </mat-header-cell>
         <mat-cell *matCellDef="let element"> 
-          <p *ngIf="this.dataSrc == 'rsrv'"> {{element.pickedUp == false ? 'Pickup' : 'Return'}} </p> 
-          <p *ngIf="this.dataSrc == 'rcrd'"> {{element.pickedUp == true ? 'Pickup' : 'Return'}} </p> 
+          <p> {{element.pickedUp == false ? 'Pickup' : 'Return'}} </p> 
         </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="itemID">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Item </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <p> {{element.itemID}} </p> </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="userID">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> User </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <p> {{element.userID}} </p> </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="strtTime">
@@ -98,9 +106,19 @@ import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/i
         <mat-cell *matCellDef="let element"> <p> {{parseTime(element.stopTime)}} </p> </mat-cell>
       </ng-container>
 
+      <ng-container matColumnDef="expect">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Expected Time </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <p> {{parseTime(element.expect)}} </p> </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actual">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Actual Time </mat-header-cell>
+        <mat-cell *matCellDef="let element"> <p> {{element.actual}} </p> </mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="itemCond">
         <mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
-          {{parseCondition(element.itemCond)}} : {{element.comments}}
+          <p> {{parseCondition(element.itemCond)}} : {{element.comments == '' ? 'No Comment' : element.comments}} </p>
         </mat-cell>
       </ng-container>
 
@@ -114,7 +132,7 @@ import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/i
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;" class="element-row"></mat-row>
-      <div *ngIf="this.dataSrc == 'rcrd'">
+      <div *ngIf="this.dataSrc == ('rcrd' || 'rsrv')">
         <mat-row *matRowDef="let row; columns: ['itemCond']"></mat-row>
       </div>
     </mat-table>
@@ -126,19 +144,10 @@ import { Account, Item, Locker, Record, Reservation } from 'src/app/_resources/i
   </div>
   `,
 })
-export class ManagerHomeComponent implements OnInit, OnDestroy {
-  private emailSub: Subscription = new Subscription();
-  private elemSub : Subscription = new Subscription();
-  private accts$: Observable<Account[]> = new Observable();
-  private items$: Observable<Item[]> = new Observable();
-  private locks$: Observable<Locker[]> = new Observable();
-  private rcrds$: Observable<Record[]> = new Observable();
-  private rsrvs$: Observable<Reservation[]> = new Observable();
-
-  public custName: string | undefined = "";
+export class ManagerHomeComponent implements OnInit {
   public dataSource: MatTableDataSource<any> = new MatTableDataSource<any>();
-  public displayedColumns : string[] = [];
   public dataSrc: string = "";
+  public displayedColumns : string[] = [];
   public expandedElement: Record | null = {};
 
   constructor(
@@ -150,25 +159,11 @@ export class ManagerHomeComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort!: MatSort;
 
   ngOnInit(): void {
-    this.custName = this.getUserNameFromInfo();
     this.changeTableDataSrc('acct');
-  }
-  ngOnDestroy(): void {
-    this.emailSub.unsubscribe();
-    this.elemSub.unsubscribe();
   }
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  private getUserNameFromInfo(): string {
-    let cacheInfo = localStorage.getItem("userInfo")?.toString();
-    if (cacheInfo) {
-      let cacheStr = cacheInfo.split(" ");
-      let userName = cacheStr[1] + " " + cacheStr[2];
-      return userName;
-    } else return '';
   }
 
   /* 
@@ -208,15 +203,15 @@ export class ManagerHomeComponent implements OnInit, OnDestroy {
 
   deleteElement(element: string , id: string) : void {
     switch (element) {
-      case 'acct': this.databaseService.deleteAccount(id).subscribe({ next: () => this.accts$ = this.databaseService.getAccounts() });
+      case 'acct': this.databaseService.deleteAccount(id).subscribe({ next: () =>  this.changeTableDataSrc('acct') });
         break;
-      case 'item': this.databaseService.deleteItem(id).subscribe({ next: () => this.items$ = this.databaseService.getItems() });
+      case 'item': this.databaseService.deleteItem(id).subscribe({ next: () =>  this.changeTableDataSrc('item') });
         break;
-      case 'lock': this.databaseService.deleteLocker(id).subscribe({ next: () => this.locks$ = this.databaseService.getLockers() });
+      case 'lock': this.databaseService.deleteLocker(id).subscribe({ next: () =>  this.changeTableDataSrc('lock') });
         break;
-      case 'rcrd': this.databaseService.deleteRecord(id).subscribe({ next: () => this.rcrds$ = this.databaseService.getRecords() });
+      case 'rcrd': this.databaseService.deleteRecord(id).subscribe({ next: () =>  this.changeTableDataSrc('rcrd') });
         break;
-      case 'rsrv': this.databaseService.deleteReservation(id).subscribe({ next: () => this.rsrvs$ = this.databaseService.getReservations() });
+      case 'rsrv': this.databaseService.deleteReservation(id).subscribe({ next: () =>  this.changeTableDataSrc('rsrv') });
         break;
       default: throw Error('invalid collection');
     }
@@ -225,28 +220,84 @@ export class ManagerHomeComponent implements OnInit, OnDestroy {
   changeTableDataSrc(collection : string): void {
     switch ( collection ) {
       case 'acct':
-        this.elemSub = this.databaseService.getAccounts().subscribe( (data) => { this.dataSource.data = data; });
+        this.databaseService.getAccounts().subscribe({ next: (data) => {
+          if (data.length == 0) this.dataSource.data = [];
+          else this.dataSource.data = data;
+        }});
         this.displayedColumns = ['lastName', 'userName', 'userRFID', 'userType', 'actions'];
         this.dataSrc = 'acct';
         break;
       case 'item':
-        this.elemSub = this.databaseService.getItems().subscribe( (data) => { this.dataSource.data = data; });
+        this.databaseService.getItems().subscribe({ next: (data) => { 
+          if (data.length == 0) this.dataSource.data = [];
+          else this.dataSource.data = data;
+        }});
         this.displayedColumns = ['itemFree', 'itemIcon', 'itemName', 'itemLock', 'itemDesc', 'actions'];
         this.dataSrc = 'item';
         break;
       case 'lock':
-        this.elemSub = this.databaseService.getLockers().subscribe( (data) => { this.dataSource.data = data; });
+        this.databaseService.getLockers().subscribe({ next: (data) => {
+          if (data.length == 0) this.dataSource.data = [];
+          else this.dataSource.data = data;
+        }});
         this.displayedColumns = ['lockName', 'lockOpen', 'lockShut', 'actions'];
         this.dataSrc = 'lock';
         break;
       case 'rcrd':
-        this.elemSub = this.databaseService.getRecords().subscribe( (data) => { this.dataSource.data = data; });
-        this.displayedColumns = ['itemName', 'itemLock', 'userName', 'strtTime', 'stopTime', 'pickedUp', 'actions'];
+        this.databaseService.getRecords().subscribe({ next: (data) => { 
+          let records: Record[] = [];
+          if (data.length == 0) this.dataSource.data = [];
+          else {
+            for (let record of data) {
+              this.databaseService.getItem(record.itemID!).subscribe({
+                next: (item) => { 
+                  record.itemID = item.itemName;
+                  
+                  this.databaseService.getAccount(record.userID!).subscribe({
+                    next: (acct) => {
+                      record.userID = acct.userName;
+                      records.push(record);
+                      this.dataSource.data = records;
+                    }
+                  })
+                }, error: () => { 
+                  records.push(record);
+                  this.dataSource.data = records;
+                }
+              });
+            }
+          }
+        }, error: (err) => {console.log(err);}
+        });
+        this.displayedColumns = ['itemID', 'userID', 'pickedUp', 'expect', 'actual', 'actions'];
         this.dataSrc = 'rcrd';
         break;
       case 'rsrv':
-        this.elemSub = this.databaseService.getReservations().subscribe( (data) => { this.dataSource.data = data; });
-        this.displayedColumns = ['pickedUp', 'itemName', 'itemLock', 'userName', 'strtTime', 'stopTime', 'actions'];
+        this.databaseService.getReservations().subscribe({ next: (data) => {
+          let reservations: Reservation[] = [];
+          if (data.length == 0) this.dataSource.data = [];
+          else {
+            for (let reservation of data) {
+              this.databaseService.getItem(reservation.itemID!).subscribe({
+                next: (item) => { 
+                  reservation.itemID = item.itemName;
+                  this.databaseService.getAccount(reservation.userID!).subscribe({
+                    next: (acct) => {
+                      reservation.userID = acct.userName;
+                      reservations.push(reservation);
+                      this.dataSource.data = reservations;
+                    }
+                  })
+                }, error: () => { 
+                  reservations.push(reservation);
+                  this.dataSource.data = reservations;
+                }
+              });
+            }
+          }
+        }, error: (err) => {console.log(err);}
+        });
+        this.displayedColumns = ['pickedUp', 'itemID', 'userID', 'strtTime', 'stopTime', 'actions'];
         this.dataSrc = 'rsrv';
         break;
       default: throw Error('invalid collection');
@@ -255,11 +306,37 @@ export class ManagerHomeComponent implements OnInit, OnDestroy {
   }
 
   sendMail() {
-    let req: any = { 
-      userName: 'ase127@msstate.edu',
-      message: 'Your reservation for Skil Circular Saw will expire on 11/21/2022, 1:40:00 PM . Click here to extend: http://10.13.86.178:4200/'
-    };
-    this.emailSub = this.databaseService.sendMail(req).subscribe();
-    window.location.reload();
+    console.log("TO BE IMPLEMENTED");
+    
+    this.databaseService.getReservations().subscribe({
+      next: (data) => {
+        if (data.length == 0) {} 
+        else {
+          let dateTime = new Date();
+          for (let reservation of data) {
+            let stopTime = new Date();
+
+            // check expiration time against current time
+            if (reservation.stopTime) { console.log(dateTime)}
+            else {
+
+              console.log(dateTime);
+              /*
+              let req: any = { 
+                userID: reservation.userID!.toString(),
+                itemID: reservation.itemID!.toString(),
+                stopTime: this.parseTime(reservation.stopTime!)
+              };
+
+              this.databaseService.sendMail(req).subscribe({
+                next: (res) => { console.log(res); },
+                error: (err) => { console.log(err); }
+              });
+              */
+            }
+          }
+        }
+      }, error: (err) => { console.log(err); }
+    });
   }
 }

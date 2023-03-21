@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router } from
   providedIn: 'root'
 })
 export class AuthMngrGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor( private router: Router ) {}
   
   canActivate(
     route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean  {
@@ -18,7 +18,7 @@ export class AuthMngrGuard implements CanActivate {
 
   public isManager(): boolean {
     let status = false;
-    if (localStorage.getItem('isManager') == "true") status = true;
+    if (localStorage.getItem('userType') == "manager") status = true;
     else status = false;
     return status;
   }

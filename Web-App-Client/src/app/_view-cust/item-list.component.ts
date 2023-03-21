@@ -20,7 +20,7 @@ import { Item } from 'src/app/_resources/interfaces';
   `
 })
 export class ItemListComponent implements OnInit {
-  items$: Observable<Item[]> = new Observable();
+  public items$: Observable<Item[]> = new Observable();
 
   constructor(private databaseService: DatabaseService) { }
   

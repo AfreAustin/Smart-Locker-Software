@@ -100,7 +100,7 @@ async function applySchemaValidationItems(db: mongodb.Db) {
     const jsonSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["itemName", "itemDesc", "itemIcon", "itemLock", "itemReqs", "itemFree"],
+            required: ["itemName", "itemDesc", "itemIcon", "itemLock", "itemFree"],
             additionalProperties: false,
             properties: {
                 _id: {},
@@ -116,16 +116,11 @@ async function applySchemaValidationItems(db: mongodb.Db) {
                 },
                 itemIcon: {
                    bsonType: "string",
-                   description: "'itemIcon' is required and is a string",
-                   minLength: 3
+                   description: "'itemIcon' is required and is a string"
                 },
                 itemLock: {
                     bsonType: "string",
                     description: "'itemLock' is required and is a string",
-                 },
-                 itemReqs: {
-                    bsonType: "string",
-                    description: "'itemReqs' is required and is a string"
                  },
                  itemFree: {
                     bsonType: "boolean",
@@ -190,22 +185,18 @@ async function applySchemaValidationReservations(db: mongodb.Db) {
     const jsonSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["itemName", "itemLock", "userName", "strtTime", "stopTime", "pickedUp"],
+            required: ["itemID", "userID", "strtTime", "stopTime", "pickedUp"],
             additionalProperties: false,
             properties: {
                 _id: {},
-                itemName: {
+                itemID: {
                     bsonType: "string",
-                    description: "'itemName' is required and is a string",
+                    description: "'itemID' is required and is a string",
                     minlength: 3
                 },
-                itemLock: {
+                userID: {
                     bsonType: "string",
-                    description: "'itemLock' is required and is a string",
-                },
-                userName: {
-                    bsonType: "string",
-                    description: "'userName' is required and is a string",
+                    description: "'userID' is required and is a string",
                     minlength: 3
                 },
                 strtTime: {
@@ -241,35 +232,25 @@ async function applySchemaValidationRecords(db: mongodb.Db) {
     const jsonSchema = {
         $jsonSchema: {
             bsonType: "object",
-            required: ["rsrvtion" , "itemName", "itemLock", "userName", "strtTime", "stopTime", "pickedUp", "itemCond", "comments"],
+            required: ["itemID", "userID", "expect", "actual", "pickedUp", "itemCond", "comments"],
             additionalProperties: false,
             properties: {
                 _id: {},
-                rsrvtion: {
+                itemID: {
                     bsonType: "string",
-                    description: "'rsrvtion' is required and is a string",
+                    description: "'itemID' is required and is a string"
                 },
-                itemName: {
+                userID: {
                     bsonType: "string",
-                    description: "'itemName' is required and is a string",
-                    minlength: 3
+                    description: "'userID' is required and is a string"
                 },
-                itemLock: {
-                    bsonType: "string",
-                    description: "'itemLock' is required and is a string",
-                },
-                userName: {
-                    bsonType: "string",
-                    description: "'userName' is required and is a string",
-                    minlength: 3
-                },
-                strtTime: {
+                expect: {
                    bsonType: "number",
-                   description: "'strtTime' is required and is a number"
+                   description: "'expect' is required and is a number"
                 },
-                stopTime: {
-                   bsonType: "number",
-                   description: "'stopTime' is required and is a number"
+                actual: {
+                   bsonType: "string",
+                   description: "'actual' is required and is a string"
                 },
                 pickedUp: {
                     bsonType: "boolean",
